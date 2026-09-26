@@ -193,6 +193,29 @@ fonti:
     url: https://www.senato.it/relazioni-con-i-cittadini/amministrazione/concorsi/concorsi
 
 # ---------------------------------------------------------------------------------------------
+# VERIFICA AI: legge il bando completo (anche il PDF) dei soli bandi già filtrati e scarta quelli
+# a cui non puoi partecipare. Si attiva aggiungendo su GitHub il secret della chiave:
+#   gemini    -> GEMINI_API_KEY    (gratis: https://aistudio.google.com/apikey)
+#   anthropic -> ANTHROPIC_API_KEY (Claude, a pagamento: ~5-8 centesimi a bando con claude-opus-5,
+#                                   ~1-2 con claude-haiku-4-5)
+# ---------------------------------------------------------------------------------------------
+ai:
+  attiva: true
+  provider: gemini
+  modello: gemini-flash-lite-latest   # con provider anthropic: claude-opus-5
+  max_bandi_per_run: 40      # il primo controllo può trovarne tanti; gli altri restano non verificati
+  max_caratteri: 60000       # quanta parte del bando leggere (i requisiti sono nei primi articoli)
+  pausa: 5                   # secondi tra una chiamata e l'altra (il piano gratuito ha limiti al minuto)
+  candidato: |
+    Nato nel 2002, vive a Roma. Non è dipendente pubblico e non appartiene a categorie protette.
+    Laurea magistrale in Engineering in Computer Science, Sapienza Università di Roma
+    (classe LM-32 Ingegneria informatica), conseguimento previsto a ottobre 2026.
+    Laurea triennale in Ingegneria Informatica, Università Roma Tre (classe L-8), 2024.
+    Esperienza: tirocinio di 5 mesi come full stack developer (React, C#); tesi magistrale su pipeline LLM.
+    Competenze: Python, Java, C, C#, JavaScript/TypeScript, Kotlin, SQL/PostgreSQL, Docker, machine learning.
+    Inglese C1 (FCE B2 certificato).
+
+# ---------------------------------------------------------------------------------------------
 # NOTIFICHE: email e Telegram si attivano impostando i "secrets" su GitHub (vedi README).
 # In più il workflow apre una issue su GitHub ad ogni controllo con novità.
 # ---------------------------------------------------------------------------------------------

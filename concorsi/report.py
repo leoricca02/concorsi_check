@@ -30,6 +30,20 @@ def _dettagli(b: Bando) -> list[str]:
     return parti
 
 
+AI = {"si": "✅ adatto", "forse": "❔ da verificare", "no": "❌ non adatto"}
+
+
+def _ai(b: Bando) -> str:
+    """Riga con il riassunto dell'AI, o '' se la verifica non è stata fatta."""
+    if not b.ai:
+        return ""
+    parti = [f"🤖 {AI[b.ai['esito']]}: {b.ai['motivo']}"]
+    for chiave, etichetta in (("laurea_richiesta", "Laurea"), ("classi_ammesse", "Classi"), ("requisiti", "Requisiti")):
+        if b.ai.get(chiave):
+            parti.append(f"{etichetta}: {b.ai[chiave]}")
+    return " · ".join(parti)
+
+
 def _md(t: str) -> str:
     """Evita che parentesi quadre o asterischi nel titolo rompano il Markdown."""
     return t.replace("[", "(").replace("]", ")").replace("*", "")
@@ -43,13 +57,15 @@ def _data(iso: str) -> str:
 
 
 def markdown(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], oggi: date,
-             letti: dict[str, int] | None = None) -> str:
+             letti: dict[str, int] | None = None, scartati: list[Bando] | None = None) -> str:
     righe = [f"# Concorsi — controllo del {oggi.strftime('%d/%m/%Y')}", ""]
     if nuovi:
         righe += [f"## 🆕 Nuovi concorsi rilevanti ({len(nuovi)})", ""]
         for b in ordina(nuovi):
             righe.append(f"- {stelle(b)} **[{_md(b.titolo)}]({b.url})**  ")
             righe.append(f"  {' · '.join(_dettagli(b))}  ")
+            if b.ai:
+                righe.append(f"  {_ai(b)}  ")
             righe.append(f"  <sub>fonte: {b.fonte} · punteggio {b.punteggio}: {', '.join(b.motivi)}</sub>")
         righe.append("")
     else:
@@ -59,6 +75,10 @@ def markdown(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], og
         for b in aperti:
             righe.append(f"- [{_md(b.titolo)}]({b.url}) — {' · '.join(_dettagli(b))}")
         righe.append("")
+    if scartati:
+        righe += [f"<details><summary>🤖 Scartati dopo la lettura del bando ({len(scartati)})</summary>", ""]
+        righe += [f"- [{_md(b.titolo)}]({b.url}) — {b.ai['motivo']}" for b in scartati]
+        righe += ["", "</details>", ""]
     if errori:
         righe += ["## ⚠️ Fonti con problemi", "",
                   "Queste fonti non sono state controllate: se l'errore si ripete, va aggiornato `config.yaml`.", ""]
@@ -78,6 +98,7 @@ def html_email(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], 
         for b in ordina(nuovi):
             parti.append(f"<li>{stelle(b)} <a href=\"{e(b.url)}\"><b>{e(b.titolo)}</b></a><br>"
                          f"{e(' · '.join(_dettagli(b)))}<br>"
+                         + (f"{e(_ai(b))}<br>" if b.ai else "") +
                          f"<small style='color:#666'>fonte: {e(b.fonte)} · {e(', '.join(b.motivi))}</small></li>")
         parti.append("</ul>")
     else:
@@ -96,7 +117,7 @@ def html_email(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], 
 def testo_semplice(nuovi: list[Bando], errori: dict[str, str], oggi: date) -> str:
     righe = [f"Concorsi — {oggi.strftime('%d/%m/%Y')}: {len(nuovi)} nuovi rilevanti", ""]
     for b in ordina(nuovi):
-        righe += [f"{stelle(b)} {b.titolo}", " · ".join(_dettagli(b)), b.url, ""]
+        righe += [f"{stelle(b)} {b.titolo}", " · ".join(_dettagli(b)), *([_ai(b)] if b.ai else []), b.url, ""]
     if errori:
         righe.append("⚠️ Fonti con problemi: " + ", ".join(errori))
     return "\n".join(righe)

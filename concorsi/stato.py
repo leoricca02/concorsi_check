@@ -39,7 +39,7 @@ class Stato:
         """Bandi segnalati nei run precedenti con scadenza non ancora passata."""
         out = []
         for id_, d in self.dati["segnalati"].items():
-            if id_ in esclusi:
+            if id_ in esclusi or (d.get("ai") or {}).get("esito") == "no":
                 continue
             if d.get("scadenza") and d["scadenza"] >= oggi.isoformat():
                 campi = {k: v for k, v in d.items() if k in Bando.__dataclass_fields__}

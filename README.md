@@ -80,6 +80,19 @@ Le stelle nel report: ⭐⭐⭐ punteggio ≥ 12, ⭐⭐ ≥ 8, ⭐ il resto.
 
 > Nota: le esecuzioni programmate partono solo dal branch predefinito del repository.
 
+## Verifica AI (facoltativa)
+
+Per i soli bandi già filtrati, un modello AI legge il bando completo (anche il PDF allegato su inPA)
+e dice se puoi partecipare: ✅ adatto, ❔ da verificare, ❌ non adatto (questi finiscono in una
+sezione chiusa del report, così puoi controllarli). Nel report compaiono laurea e classi ammesse.
+
+- **Gratis (Gemini)**: crea una chiave su [Google AI Studio](https://aistudio.google.com/apikey) e
+  aggiungila come secret `GEMINI_API_KEY`.
+- **Claude (a pagamento)**: in `config.yaml` metti `provider: anthropic` e `modello: claude-opus-5`,
+  poi il secret `ANTHROPIC_API_KEY`. Circa 5-8 centesimi a bando (1-2 con `claude-haiku-4-5`).
+
+Senza chiave la verifica viene saltata. Il profilo del candidato è in `config.yaml` → `ai.candidato`.
+
 ## Aggiungere o togliere siti
 
 In `config.yaml`, sezione `fonti`. Per un nuovo ente basta l'URL della sua pagina "Concorsi" /

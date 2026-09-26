@@ -12,6 +12,7 @@ import requests
 import yaml
 
 from . import notifiche, report
+from .ai import ErroreAI, Verificatore
 from .fonti import TIPI
 from .http import FonteError, Http
 from .modelli import Bando
@@ -27,6 +28,7 @@ class Risultato:
     aperti: list[Bando] = field(default_factory=list)
     errori: dict[str, str] = field(default_factory=dict)
     letti: dict[str, int] = field(default_factory=dict)
+    scartati_ai: list[Bando] = field(default_factory=list)
 
 
 def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
@@ -62,9 +64,27 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
                 if not silenzioso:
                     ris.nuovi.append(b)
         stato.segna_fonte_inizializzata(nome)
+    verifica_ai(cfg.get("ai") or {}, http, stato, ris, oggi)
     ris.aperti = stato.ancora_aperti(oggi, esclusi={b.id for b in ris.nuovi})
     stato.pulisci(oggi)
     return ris
+
+
+def verifica_ai(cfg: dict, http: Http, stato: Stato, ris: Risultato, oggi: date) -> None:
+    """Fa leggere il bando completo a un modello AI e toglie quelli a cui il candidato non può partecipare."""
+    ver = Verificatore(cfg, http) if cfg else None
+    if not (ver and ver.attivo):
+        return
+    for b in report.ordina(ris.nuovi)[: int(cfg.get("max_bandi_per_run", 40))]:
+        try:
+            b.ai = ver.verifica(b)
+        except ErroreAI as e:
+            log.error("verifica AI interrotta: %s", e)
+            ris.errori["verifica AI"] = str(e)
+            break
+        stato.segna_segnalato(b, oggi)
+    ris.scartati_ai = [b for b in ris.nuovi if b.ai and b.ai["esito"] == "no"]
+    ris.nuovi = [b for b in ris.nuovi if not (b.ai and b.ai["esito"] == "no")]
 
 
 def notifica(cfg: dict, ris: Risultato, oggi: date) -> None:
@@ -101,7 +121,7 @@ def main(argv: list[str] | None = None) -> int:
     oggi = date.today()
     ris = esegui(cfg, stato, Http(pausa=float(cfg.get("pausa_tra_richieste", 1.0))), oggi)
 
-    md = report.markdown(ris.nuovi, ris.aperti, ris.errori, oggi, ris.letti)
+    md = report.markdown(ris.nuovi, ris.aperti, ris.errori, oggi, ris.letti, ris.scartati_ai)
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(md, encoding="utf-8")
     if args.issue_file:

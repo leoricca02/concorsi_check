@@ -18,10 +18,12 @@ class Bando:
     pubblicazione: str = ""      # YYYY-MM-DD
     scadenza: str = ""           # YYYY-MM-DD
     posti: int | None = None
+    documento: str = ""          # URL del bando completo (es. PDF), se diverso da `url`
     # compilati dalla valutazione
     punteggio: int = 0
     motivi: list[str] = field(default_factory=list)
     laurea: str = ""             # "magistrale" | "triennale" | "qualsiasi" | ""
+    ai: dict | None = None       # esito della verifica AI (vedi ai.py), se fatta
 
     def per_stato(self) -> dict:
         d = asdict(self)

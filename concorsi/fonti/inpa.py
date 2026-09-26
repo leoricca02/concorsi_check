@@ -22,6 +22,7 @@ from ..testo import data_iso, indovina_posti, pulisci
 log = logging.getLogger("concorsi")
 
 API = "https://portale.inpa.gov.it/concorsi-smart/api/concorso-public-area"
+MEDIA = "https://portale.inpa.gov.it/api/media/{id}"
 PAGINA_BANDO = "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id={id}"
 
 
@@ -52,6 +53,7 @@ class Inpa:
             pubblicazione=data_iso(raw.get("dataPubblicazione")),
             scadenza=data_iso(raw.get("dataScadenza")),
             posti=int(posti) if isinstance(posti, (int, float)) and posti > 0 else indovina_posti(titolo),
+            documento=MEDIA.format(id=raw["allegatoMediaId"]) if raw.get("allegatoMediaId") else "",
         )
 
     def cerca(self) -> list[Bando]:
@@ -87,5 +89,9 @@ class Inpa:
         nome_ente = (d.get("company") or {}).get("name")
         if nome_ente:
             b.ente = pulisci(nome_ente)
+        allegati = sorted((a for a in d.get("allegati") or [] if a.get("mediaId")),
+                          key=lambda a: (a.get("tipo") != "BANDO_CONCORSO", a.get("sequence") or 99))
+        if allegati:
+            b.documento = MEDIA.format(id=allegati[0]["mediaId"])
         dettagli = [pulisci(d.get("requisitiSpecifici")), pulisci(d.get("descrizione"))]
         b.testo = " ".join(x for x in [b.testo, *dettagli] if x)[:20000]

@@ -11,8 +11,10 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 
 class Risposta:
-    def __init__(self, testo: str):
-        self.text = testo
+    def __init__(self, testo: str | bytes, headers: dict | None = None):
+        self.content = testo if isinstance(testo, bytes) else testo.encode("utf-8")
+        self.text = self.content.decode("utf-8", "replace")
+        self.headers = headers or {}
 
     def json(self):
         return json.loads(self.text)
@@ -25,6 +27,7 @@ class HttpFinto:
         self.get_map = get or {}
         self.post_map = post or {}
         self.chiamate: list[str] = []
+        self.corpi: list[dict] = []
 
     def _trova(self, mappa, url):
         from concorsi.http import FonteError
@@ -40,6 +43,7 @@ class HttpFinto:
         return self._trova(self.get_map, url)
 
     def post_json(self, url, body, **kw):
+        self.corpi.append(body)
         return self._trova(self.post_map, url)
 
 
