@@ -71,6 +71,7 @@ def test_gazzetta_atti_con_ente_scadenza_e_filtro_tipi():
     assert acn.ente == "Agenzia per la Cybersicurezza Nazionale"
     assert acn.scadenza == "2026-10-26"
     assert acn.posti == 20
+    assert acn.sede == "Nazionale" and atti["gu:26E01240"].sede == ""
     assert acn.titolo.endswith("indeterminato.")  # tolto "(26E01234) Pag. 1"
     assert atti["gu:26E01240"].ente == "Comune di Frosinone"
     assert atti["gu:26E01250"].ente.startswith("Universita' di Roma")

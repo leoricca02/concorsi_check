@@ -4,8 +4,8 @@ from concorsi.modelli import Bando
 from concorsi.valutazione import Valutatore
 
 
-def bando(titolo, testo="", ente="", profilo=""):
-    return Bando(id="x", fonte="t", titolo=titolo, url="u", ente=ente, testo=testo, profilo=profilo)
+def bando(titolo, testo="", ente="", profilo="", sede="Lazio, Roma"):
+    return Bando(id="x", fonte="t", titolo=titolo, url="u", ente=ente, testo=testo, profilo=profilo, sede=sede)
 
 
 @pytest.fixture
@@ -68,3 +68,25 @@ def test_rivalutare_non_accumula(val):
 def test_richiesta_una_di_con_regola_inesistente():
     with pytest.raises(ValueError):
         Valutatore({"regole": [{"nome": "a", "peso": 1, "pattern": ["a"]}], "richiesta_una_di": ["b"]})
+
+
+@pytest.mark.parametrize("titolo,ente,sede,atteso", [
+    ("Concorso per 5 funzionari informatici", "Comune di Milano", "Lombardia, Milano", False),
+    ("Concorso per 5 funzionari informatici", "Ministero dell'Interno", "Nazionale", True),
+    ("Concorso per 5 funzionari informatici", "Roma Capitale", "", True),       # Gazzetta: niente sede, si guarda l'ente
+    ("Concorso per 5 funzionari informatici", "Comune di Frosinone", "", False),
+])
+def test_solo_roma(val, titolo, ente, sede, atteso):
+    assert val.valuta(bando(titolo, "laurea magistrale", ente, sede=sede)) is atteso
+
+
+@pytest.mark.parametrize("titolo,ente", [
+    ("Concorso per 2 posti di categoria D, area elaborazione dati, laureati in ingegneria informatica",
+     "Universita' di Roma La Sapienza"),
+    ("Concorso per 1 tecnologo informatico", "Università degli Studi di Roma Tor Vergata"),
+    ("Concorso per 2 collaboratori tecnico-professionali informatici riservato alle categorie protette "
+     "di cui all'art. 1 della legge n. 68/1999", "ASL Roma 1"),
+])
+def test_universita_e_categorie_protette_escluse(val, titolo, ente):
+    b = bando(titolo, "laurea magistrale LM-32", ente)
+    assert not val.valuta(b) and b.punteggio == -99

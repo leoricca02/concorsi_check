@@ -51,6 +51,12 @@ class Valutatore:
         if sconosciute:
             raise ValueError(f"richiesta_una_di cita regole inesistenti: {sorted(sconosciute)}")
         self.ignora = [re.compile(p, re.I) for p in profilo.get("frasi_da_ignorare", [])]
+        self.sedi = [re.compile(p, re.I) for p in profilo.get("sedi_ammesse", [])]
+
+    def sede_ammessa(self, b: Bando) -> bool:
+        """Senza sede esplicita (es. Gazzetta) si cerca la città nel titolo e nel nome dell'ente."""
+        dove = b.sede or f"{b.titolo} {b.ente}"
+        return not self.sedi or any(p.search(dove) for p in self.sedi)
 
     def valuta(self, b: Bando) -> bool:
         """Calcola punteggio e motivi; True se il bando va segnalato."""
@@ -60,6 +66,9 @@ class Valutatore:
             testo = p.sub(" ", testo)
         tutto = f"{titolo} {testo} {b.sede}"
         b.punteggio, b.motivi, b.laurea, lauree, trovate = 0, [], "", [], set()
+        if not self.sede_ammessa(b):
+            b.punteggio, b.motivi = -99, ["escluso: sede non ammessa"]
+            return False
         for r in self.regole:
             if not r.corrisponde(titolo, tutto):
                 continue

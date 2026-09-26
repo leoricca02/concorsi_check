@@ -50,7 +50,7 @@ class Pagina:
                     continue
                 chiave = hashlib.sha1(href.encode()).hexdigest()[:16]
                 out.setdefault(chiave, Bando(
-                    id=f"pagina:{self.nome}:{chiave}", fonte=self.nome, titolo=testo, url=href, ente=ente,
+                    id=f"pagina:{self.nome}:{chiave}", fonte=self.nome, titolo=testo, url=href, ente=ente, sede=self.cfg.get("sede", ""),
                     posti=indovina_posti(testo),
                 ))
         return list(out.values())

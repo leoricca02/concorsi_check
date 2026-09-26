@@ -17,6 +17,11 @@ profilo:
   soglia: 5
   soglia_dettaglio: 2   # da questo punteggio in su si scarica il dettaglio inPA (requisiti completi)
 
+  # Solo bandi con sede in una di queste zone. La sede viene da inPA; per la Gazzetta si guardano
+  # titolo ed ente ("Nazionale" = amministrazioni centrali ed enti di ricerca, di solito con sede a Roma).
+  # Per cercare ovunque: sedi_ammesse: []
+  sedi_ammesse: ["\\broma\\b", "roma capitale", "\\bnazionale\\b", "tutto il territorio"]
+
   # Il bando deve corrispondere ad almeno una di queste regole (la "materia"), oltre a superare la soglia.
   richiesta_una_di: ["profilo informatico/ICT", "laurea in informatica richiesta", "dati/AI", "cybersecurity",
                      "qualsiasi laurea"]
@@ -37,6 +42,17 @@ profilo:
       pattern: ["mobilit[àa]", "progression[ei] vertical", "stabilizzazion", "riservat[oa] al personale",
                 "personale (interno|dipendente) d", "scorrimento (della )?graduatoria", "in posizione di comando",
                 "\\bart\\.? ?30\\b"]
+    - nome: università
+      escludi: true
+      campo: titolo
+      pattern: ["\\buniversit(à|a'|a\\b|y\\b)", "\\bateneo\\b", "politecnico", "\\bsapienza\\b", "tor vergata",
+                "roma tre", "\\bluiss\\b", "scuola normale", "scuola superiore (sant|di studi|meridionale)",
+                "\\bgssi\\b", "\\bimt\\b", "\\bsissa\\b"]
+    - nome: categorie protette
+      escludi: true
+      campo: titolo
+      pattern: ["categorie protette", "legge (n\\.? ?)?68", "l\\. ?68/(19)?99", "art\\.? ?1,? (comma 1,? )?(della )?l(egge|\\.) ?(n\\.? ?)?68",
+                "disabil", "riservat[oa] a(i|gli) (soggetti|appartenenti|iscritti)"]
     - nome: profilo sanitario/scolastico/operativo
       escludi: true
       campo: titolo
@@ -143,52 +159,62 @@ fonti:
 
   banca_italia:
     tipo: pagina
+    sede: Roma
     ente: Banca d'Italia
     url: https://www.bancaditalia.it/chi-siamo/lavorare-bi/informazioni-concorsi/bandi/index.html
     segnala_al_primo_run: true   # la pagina elenca solo i bandi aperti
 
   consob:
     tipo: pagina
+    sede: Roma, Milano
     ente: CONSOB
     url: https://www.consob.it/web/area-pubblica/concorsi-pubblici
 
   ivass:
     tipo: pagina
+    sede: Roma
     ente: IVASS
     url: https://www.ivass.it/chi-siamo/in-sintesi/lavorare-in-ivass/informazione-concorsi/index.html
 
   acn_cybersicurezza:
     tipo: pagina
+    sede: Roma
     ente: Agenzia per la Cybersicurezza Nazionale
     url: https://www.acn.gov.it/portale/lavora-con-noi
 
   agid:
     tipo: pagina
+    sede: Roma
     ente: AgID
     url: https://www.agid.gov.it/it/agenzia/procedure-selezione
 
   istat:
     tipo: pagina
+    sede: Roma
     ente: Istat
     url: https://www.istat.it/amministrazione-trasparente/bandi-di-concorso/
 
   agcom:
     tipo: pagina
+    sede: Roma, Napoli
     ente: AGCOM
     url: https://www.agcom.it/taxonomy/term/262
 
   arera:
     tipo: pagina
+    sede: Milano
     ente: ARERA
     url: https://www.arera.it/stampa-bandi-concorso
 
   camera_deputati:
     tipo: pagina
+    sede: Roma
     ente: Camera dei deputati
     url: https://concorsi.camera.it/
 
   senato:
     tipo: pagina
+    sede: Roma
     ente: Senato della Repubblica
     url: https://concorsi.senato.it/   # senato.it blocca i controlli automatici (HTTP 202)
 

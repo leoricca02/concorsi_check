@@ -28,6 +28,8 @@ SEZIONI = {
     "UNIVERSITA' ED ALTRI ISTITUTI DI ISTRUZIONE", "UNIVERSITÀ ED ALTRI ISTITUTI DI ISTRUZIONE",
     "AZIENDE SANITARIE LOCALI ED ALTRE ISTITUZIONI SANITARIE", "ALTRI ENTI", "DIARI", "AVVISI", "SOMMARIO",
 }
+# per gli atti di queste sezioni la sede non è nel sommario: di solito è a livello nazionale (spesso Roma)
+SEZIONI_NAZIONALI = {"AMMINISTRAZIONI CENTRALI", "ENTI PUBBLICI STATALI", "ENTI DI RICERCA"}
 TIPI_ESCLUSI = ("DIARIO", "AVVISO", "RETTIFICA", "GRADUATORIA", "MOBILIT", "ERRATA")
 
 
@@ -54,7 +56,7 @@ class Gazzetta:
 
     def atti(self, html: str, data_pub: str) -> list[Bando]:
         soup = BeautifulSoup(html, "html.parser")
-        ente = ""
+        ente, sezione = "", ""
         atti: dict[str, dict] = {}
         for el in soup.descendants:
             if isinstance(el, Tag) and el.name == "a":
@@ -63,7 +65,7 @@ class Gazzetta:
                     continue
                 codice, txt = m.group(1), pulisci(el.get_text(" "))
                 if codice not in atti:
-                    atti[codice] = {"tipo": txt, "titolo": "", "ente": ente, "url": urljoin(self.base + "/", el["href"])}
+                    atti[codice] = {"tipo": txt, "titolo": "", "ente": ente, "sezione": sezione, "url": urljoin(self.base + "/", el["href"])}
                 elif not atti[codice]["titolo"]:
                     atti[codice]["titolo"] = txt
             elif (isinstance(el, NavigableString) and not isinstance(el, Comment)
@@ -72,7 +74,7 @@ class Gazzetta:
                 if len(t) < 4 or not any(c.isalpha() for c in t):
                     continue
                 if t.upper() in SEZIONI:
-                    ente = ""
+                    ente, sezione = "", t.upper()
                 elif t.isupper():
                     ente = t
         if not atti:
@@ -85,6 +87,7 @@ class Gazzetta:
             titolo = re.sub(r"\s*\(\w+\)\s*Pag\.\s*\d+\s*$", "", a["titolo"])
             out.append(Bando(
                 id=f"gu:{codice}", fonte=self.nome, titolo=titolo, url=a["url"], ente=_ente_leggibile(a["ente"]),
+                sede="Nazionale" if a["sezione"] in SEZIONI_NAZIONALI else "",
                 pubblicazione=data_pub, scadenza=data_italiana(tipo.lower()) if "SCAD" in tipo else "",
                 posti=indovina_posti(titolo),
             ))

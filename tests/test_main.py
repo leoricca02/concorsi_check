@@ -12,7 +12,8 @@ def cfg_prova(config):
     config["fonti"] = {
         "inpa": {"tipo": "inpa", "categorie_escluse": ["Avvisi di mobilità"]},
         "gu": {"tipo": "gazzetta", "fascicoli": 1, "fascicoli_primo_run": 1},
-        "bdi": {"tipo": "pagina", "url": "https://www.bancaditalia.it/bandi/index.html", "ente": "Banca d'Italia"},
+        "bdi": {"tipo": "pagina", "url": "https://www.bancaditalia.it/bandi/index.html", "ente": "Banca d'Italia",
+                "sede": "Roma"},
         "rotta": {"tipo": "pagina", "url": "https://sito-rotto.example/"},
     }
     return config
@@ -37,8 +38,8 @@ def test_primo_run(config, tmp_path):
     # inPA: Banca d'Italia (titolo) e Regione Lazio (requisiti dal dettaglio); scaduto e legale esclusi
     assert {"inpa:aaa111", "inpa:eee555"} <= ids
     assert not {"inpa:bbb222", "inpa:ddd444", "inpa:fff666"} & ids
-    # GU: ACN e Sapienza sì, istruttore no
-    assert {"gu:26E01234", "gu:26E01250"} <= ids and "gu:26E01240" not in ids
+    # GU: ACN (amministrazione centrale) sì; istruttore a Frosinone e università no
+    assert "gu:26E01234" in ids and not {"gu:26E01240", "gu:26E01250"} & ids
     # pagina generica al primo run: memorizzata ma non segnalata
     assert not any(i.startswith("pagina:") for i in ids)
     assert stato.fonte_inizializzata("bdi")
