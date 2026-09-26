@@ -1,0 +1,62 @@
+{
+  "content": [
+    {
+      "id": "aaa111",
+      "codice": "BI-ICT-2026",
+      "titolo": "BANCA D'ITALIA - CONCORSO PER 30 ESPERTI CON ORIENTAMENTO NELLE DISCIPLINE INFORMATICHE",
+      "descrizioneBreve": "Concorso per l'assunzione di 30 Esperti. Laurea magistrale in LM-32 Ingegneria informatica con voto minimo 105/110.",
+      "figuraRicercata": "Esperto informatico",
+      "dataPubblicazione": "2026-09-20T08:00:00Z",
+      "dataScadenza": "2026-10-20T10:00:00Z",
+      "numPosti": 30,
+      "entiRiferimento": ["Banca d'Italia"],
+      "sedi": ["Lazio", "Roma"],
+      "settori": ["Informatica"],
+      "categorie": ["Concorso"]
+    },
+    {
+      "id": "bbb222",
+      "titolo": "Concorso pubblico per n. 1 Funzionario Legale",
+      "descrizioneBreve": "Laurea magistrale in giurisprudenza. Conoscenza dell'uso delle apparecchiature e delle applicazioni informatiche più diffuse.",
+      "figuraRicercata": "Funzionario Legale",
+      "dataPubblicazione": "2026-09-15T08:00:00Z",
+      "dataScadenza": "2026-10-11T21:59:00Z",
+      "numPosti": 1,
+      "entiRiferimento": ["Comune di Prato"],
+      "sedi": ["Toscana", "Prato"],
+      "settori": ["Legale"],
+      "categorie": ["Concorso"]
+    },
+    {
+      "id": "ccc333",
+      "titolo": "Avviso di mobilità esterna per 2 funzionari informatici",
+      "figuraRicercata": "Funzionario informatico",
+      "dataScadenza": "2026-10-30T21:59:00Z",
+      "entiRiferimento": ["Comune di Roma"],
+      "sedi": ["Lazio"],
+      "categorie": ["Avvisi di mobilità"]
+    },
+    {
+      "id": "ddd444",
+      "titolo": "Concorso per 3 istruttori informatici - area degli istruttori",
+      "figuraRicercata": "Istruttore informatico",
+      "dataScadenza": "2026-10-30T21:59:00Z",
+      "entiRiferimento": ["Comune di Milano"],
+      "sedi": ["Lombardia"],
+      "categorie": ["Concorso"]
+    },
+    {
+      "id": "eee555",
+      "titolo": "Concorso per 5 funzionari - area dei funzionari - profilo sistemi informativi",
+      "descrizioneBreve": "",
+      "figuraRicercata": "",
+      "dataScadenza": "2026-11-15T21:59:00Z",
+      "entiRiferimento": ["Regione Lazio"],
+      "sedi": ["Lazio"],
+      "categorie": ["Concorso"]
+    }
+  ],
+  "totalElements": 6,
+  "totalPages": 2,
+  "last": false
+}

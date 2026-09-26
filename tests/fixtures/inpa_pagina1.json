@@ -1,0 +1,17 @@
+{
+  "content": [
+    {
+      "id": "fff666",
+      "titolo": "Concorso per 10 data scientist",
+      "descrizioneBreve": "Laurea magistrale in discipline statistiche o informatiche.",
+      "figuraRicercata": "Data scientist",
+      "dataScadenza": "2025-01-10T21:59:00Z",
+      "entiRiferimento": ["CONSOB"],
+      "sedi": ["Lazio"],
+      "categorie": ["Concorso"]
+    }
+  ],
+  "totalElements": 6,
+  "totalPages": 2,
+  "last": true
+}

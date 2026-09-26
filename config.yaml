@@ -1,0 +1,201 @@
+# Configurazione di Concorsi Check.
+# Si modifica tutto da qui: fonti da controllare, parole chiave, soglia di rilevanza, notifiche.
+# (La frequenza dei controlli si cambia in .github/workflows/controllo-concorsi.yml)
+
+pausa_tra_richieste: 1.0   # secondi tra una richiesta e l'altra, per non disturbare i siti
+
+# ---------------------------------------------------------------------------------------------
+# PROFILO: come si decide se un bando è interessante.
+# Costruito sul CV: LM Engineering in Computer Science (Sapienza, classe LM-32),
+# L Ingegneria Informatica (Roma Tre, classe L-8), interessi: software, dati, AI, residenza a Roma.
+#
+# Ogni regola che corrisponde somma il suo peso (una volta sola). Il bando viene segnalato se
+# il totale è >= soglia. `campo: titolo` = la regola guarda solo titolo + ente, non i requisiti.
+# I pattern sono espressioni regolari, senza distinzione maiuscole/minuscole.
+# ---------------------------------------------------------------------------------------------
+profilo:
+  soglia: 5
+  soglia_dettaglio: 2   # da questo punteggio in su si scarica il dettaglio inPA (requisiti completi)
+
+  # Il bando deve corrispondere ad almeno una di queste regole (la "materia"), oltre a superare la soglia.
+  richiesta_una_di: ["profilo informatico/ICT", "laurea in informatica richiesta", "dati/AI", "cybersecurity",
+                     "qualsiasi laurea"]
+
+  # Frasi standard presenti in quasi tutti i bandi: vengono tolte dai requisiti prima della valutazione.
+  frasi_da_ignorare:
+    - "(conoscenz|competenz|uso|utilizzo|capacit)[^.;:]{0,100}(apparecchiature|applicazioni|strumenti|programmi|tecnologie|sistemi)[^.;:]{0,60}informatic[^.;:]*"
+    - "(conoscenz|competenz)[^.;:]{0,20}informatic[^.;:]{0,40}(di base|diffus)[^.;:]*"
+    - "(procedura|piattaforma|sistema|modalit[àa]|via|in forma|domanda)[^.;:]{0,30}(telematic|informatic|digitale)[^.;:]*"
+    - "(competenze|abilit[àa]) digitali[^.;:]*"
+    - "(identit[àa]|domicilio|firma|documento) digitale|\\bspid\\b|\\bcie\\b|posta elettronica( certificata)?"
+
+  regole:
+    # --- esclusioni secche (solo sul titolo) ---
+    - nome: mobilità/procedure interne
+      escludi: true
+      campo: titolo
+      pattern: ["mobilit[àa]", "progression[ei] vertical", "stabilizzazion", "riservat[oa] al personale",
+                "personale (interno|dipendente) d", "scorrimento (della )?graduatoria", "in posizione di comando",
+                "\\bart\\.? ?30\\b"]
+    - nome: profilo sanitario/scolastico/operativo
+      escludi: true
+      campo: titolo
+      pattern: ["infermier", "\\bmedic[oi]\\b", "dirigente medico", "\\boss\\b", "operatore socio",
+                "ostetric", "fisioterap", "veterinar", "farmacist", "psicolog", "tecnico sanitario",
+                "educat(ore|rice)", "insegnant", "\\bdocent[ei]\\b", "collaboratore scolastic",
+                "polizia locale", "agente di polizia", "vigil[ei] (urban|del fuoco)", "autist",
+                "operai[oa]", "cuoc[oa]", "giardinier", "necroform", "assistente sociale", "logoped",
+                "bibliotecari", "\\bmusicist", "professore (ordinario|associato)", "ricercatore a tempo determinato .*(medic|chirurg)"]
+
+    # --- materia: il cuore del profilo (serve almeno una di queste, vedi richiesta_una_di) ---
+    - nome: profilo informatico/ICT
+      peso: 6
+      campo: titolo      # solo titolo/profilo: nei requisiti "informatica" compare quasi sempre
+      pattern: ["informatic", "\\bict\\b", "sistemi informativi", "information (and communication )?technology",
+                "tecnologie dell.informazione", "software", "sviluppator", "\\bdeveloper", "programmator",
+                "analista (programmatore|di sistemi|funzionale)", "\\bit\\b (specialist|manager|architect)",
+                "sistemista", "\\binf/01\\b", "ing-inf/0[45]"]
+    - nome: laurea in informatica richiesta
+      peso: 5
+      pattern: ["\\blm-? ?32\\b", "\\blm-? ?18\\b", "\\blm-? ?66\\b", "\\blm-? ?91\\b", "\\blm-? ?data\\b",
+                "\\bl-? ?8\\b", "\\bl-? ?31\\b", "\\b(23|35|100)/s\\b", "ingegneria informatica",
+                "scienze e tecnologie informatiche", "laurea (magistrale |specialistica |triennale )?in informatica",
+                "computer (science|engineering)", "ingegneria (delle|dell.) ?(informazione|telecomunicazioni)"]
+    - nome: dati/AI
+      peso: 5
+      pattern: ["data scien", "data analy", "data engineer", "big data", "intelligenza artificiale",
+                "artificial intelligence", "machine learning", "\\bia\\b generativa",
+                "business intelligence", "process mining", "data management", "data governance"]
+    - nome: cybersecurity
+      peso: 5
+      pattern: ["cyber", "sicurezza informatica", "sicurezza delle informazioni", "information security",
+                "sicurezza (delle )?reti"]
+    - nome: qualsiasi laurea
+      peso: 2
+      laurea: qualsiasi
+      pattern: ["qualsiasi (diploma di )?laurea", "qualunque (diploma di )?laurea", "laurea in qualsiasi",
+                "qualsiasi classe di laurea"]
+    - nome: digitale/tecnico
+      peso: 2
+      pattern: ["transizione digitale", "trasformazione digitale", "innovazione (tecnologica|digitale)",
+                "\\bdigital[ei]\\b", "\\bcloud\\b", "reti e sistemi", "telecomunicazion", "ingegner",
+                "profilo tecnico", "tecnico[- ]scientific", "\\bstem\\b", "statistic"]
+
+    # --- livello / titolo di studio ---
+    - nome: laurea magistrale
+      peso: 3
+      laurea: magistrale
+      pattern: ["laurea magistrale", "laurea specialistica", "diploma di laurea", "vecchio ordinamento",
+                "\\blm-? ?\\d", "area delle elevate professionalit", "\\besperti\\b", "\\bconsigliere",
+                "\\bfunzionari[oa]? .*(livello|carriera) (direttiv|superior)"]
+    - nome: laurea triennale
+      peso: 2
+      laurea: triennale
+      pattern: ["laurea triennale", "laurea di primo livello", "laurea \\(l\\)", "\\bclasse l-",
+                "area dei funzionari", "\\bfunzionari[oa]?\\b", "\\bcoordinator"]
+    - nome: qualsiasi laurea
+      peso: 3
+      laurea: qualsiasi
+      pattern: ["qualsiasi (diploma di )?laurea", "qualunque (diploma di )?laurea", "laurea in qualsiasi"]
+
+    # --- preferenze ---
+    - nome: Roma/Lazio o nazionale
+      peso: 1
+      pattern: ["\\broma\\b", "\\blazio\\b", "frascati", "territorio nazionale", "\\bnazionale\\b"]
+    - nome: tempo indeterminato
+      peso: 1
+      pattern: ["tempo (pieno ed? )?indeterminato"]
+
+    # --- penalità: di solito richiedono solo il diploma o molta esperienza ---
+    - nome: area istruttori/operatori (diploma)
+      peso: -6
+      campo: titolo
+      # (in sanità "collaboratore tecnico/amministrativo PROFESSIONALE" richiede la laurea: non penalizzato)
+      pattern: ["istruttor[ei]", "\\boperatori?\\b", "collaborator[ei] (amministrativ|tecnic)[oi](?![- ]+professional)",
+                "\\bcter\\b", "collaborator[ei] tecnic[oi] (degli )?enti di ricerca", "assistent[ei] (amministrativ|tecnic)", "\\besecutor", "categoria [bc]\\b",
+                "diploma di (scuola|istruzione) secondaria"]
+    - nome: dirigenza (serve esperienza)
+      peso: -3
+      campo: titolo
+      pattern: ["\\bdirigent[ei]\\b", "direttore generale", "incarico dirigenziale", "art\\.? ?110"]
+    - nome: tirocinio/borsa
+      peso: -2
+      campo: titolo
+      pattern: ["tirocini", "borsa di studio", "borse di studio"]
+
+# ---------------------------------------------------------------------------------------------
+# FONTI. tipo: inpa | gazzetta | pagina.  attiva: false per disattivarne una.
+# Per le "pagina" basta l'URL; `selettore` (CSS) restringe la ricerca dei link a una parte della
+# pagina; `segnala_al_primo_run: true` segnala anche i link già presenti al primo controllo.
+# ---------------------------------------------------------------------------------------------
+fonti:
+  inpa:
+    tipo: inpa
+    # Categorie inPA da ignorare (non sono concorsi aperti a esterni neolaureati)
+    categorie_escluse: ["Avvisi di mobilità", "Scelta PA/sede", "Avvisi OIV", "Bando Apprendistato",
+                        "Procedure Straordinarie"]
+    max_pagine: 40
+
+  gazzetta_ufficiale:
+    tipo: gazzetta
+    fascicoli: 4             # ultimi 4 numeri (~2 settimane); se controlli ogni mese metti 9
+    fascicoli_primo_run: 9   # al primo avvio guarda circa l'ultimo mese
+
+  banca_italia:
+    tipo: pagina
+    ente: Banca d'Italia
+    url: https://www.bancaditalia.it/chi-siamo/lavorare-bi/informazioni-concorsi/bandi/index.html
+    segnala_al_primo_run: true   # la pagina elenca solo i bandi aperti
+
+  consob:
+    tipo: pagina
+    ente: CONSOB
+    url: https://www.consob.it/web/area-pubblica/concorsi-pubblici
+
+  ivass:
+    tipo: pagina
+    ente: IVASS
+    url: https://www.ivass.it/chi-siamo/in-sintesi/lavorare-in-ivass/informazione-concorsi/index.html
+
+  acn_cybersicurezza:
+    tipo: pagina
+    ente: Agenzia per la Cybersicurezza Nazionale
+    url: https://www.acn.gov.it/portale/lavora-con-noi
+
+  agid:
+    tipo: pagina
+    ente: AgID
+    url: https://www.agid.gov.it/it/agenzia/procedure-selezione
+
+  istat:
+    tipo: pagina
+    ente: Istat
+    url: https://www.istat.it/amministrazione-trasparente/bandi-di-concorso/
+
+  agcom:
+    tipo: pagina
+    ente: AGCOM
+    url: https://www.agcom.it/bandi-di-concorso1
+
+  arera:
+    tipo: pagina
+    ente: ARERA
+    url: https://www.arera.it/stampa-bandi-concorso
+
+  camera_deputati:
+    tipo: pagina
+    ente: Camera dei deputati
+    url: https://concorsi.camera.it/
+
+  senato:
+    tipo: pagina
+    ente: Senato della Repubblica
+    url: https://www.senato.it/relazioni-con-i-cittadini/amministrazione/concorsi/concorsi
+
+# ---------------------------------------------------------------------------------------------
+# NOTIFICHE: email e Telegram si attivano impostando i "secrets" su GitHub (vedi README).
+# In più il workflow apre una issue su GitHub ad ogni controllo con novità.
+# ---------------------------------------------------------------------------------------------
+notifiche:
+  segnala_errori: true        # avvisa anche quando una fonte non risponde
+  anche_senza_novita: false   # true = ricevi un messaggio anche quando non c'è nulla di nuovo
