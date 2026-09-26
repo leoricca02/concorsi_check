@@ -65,7 +65,8 @@ Le stelle nel report: ⭐⭐⭐ punteggio ≥ 12, ⭐⭐ ≥ 8, ⭐ il resto.
 1. **Scegli la frequenza** in `.github/workflows/controllo-concorsi.yml` (settimanale di default;
    ci sono le righe pronte per "ogni due settimane" e "ogni mese"). Se controlli una volta al mese,
    in `config.yaml` metti `fascicoli: 9` per la Gazzetta.
-2. **Primo controllo**: scheda *Actions* → *Controllo concorsi* → *Run workflow*. Al termine trovi
+2. **Primo controllo**: parte da solo a ogni modifica di `config.yaml`; oppure scheda *Actions* →
+   *Controllo concorsi* (nella colonna a sinistra, non "Test") → *Run workflow*. Al termine trovi
    il report in `reports/ultimo.md` e, se ci sono novità, una nuova issue.
 3. **Notifiche** (facoltative, in *Settings → Secrets and variables → Actions → New repository secret*):
    - **Issue GitHub**: già attive. GitHub ti manda un'email per ogni nuova issue se "guardi" il

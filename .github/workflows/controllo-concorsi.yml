@@ -7,6 +7,11 @@ on:
     # - cron: "17 6 1,15 * *"   # due volte al mese (giorno 1 e 15)
     # - cron: "17 6 1 * *"      # una volta al mese
   workflow_dispatch:            # pulsante "Run workflow" nella scheda Actions, per un controllo immediato
+  push:                         # e subito dopo ogni modifica alla configurazione o al codice
+    paths:
+      - "config.yaml"
+      - "concorsi/**"
+      - ".github/workflows/controllo-concorsi.yml"
 
 permissions:
   contents: write   # per salvare data/stato.json e reports/ nel repository
