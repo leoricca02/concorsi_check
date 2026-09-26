@@ -57,7 +57,8 @@ jobs:
             echo "Niente da salvare"
           else
             git commit -m "Controllo concorsi del $(date +%d/%m/%Y)"
-            git push
+            git pull --rebase -X theirs origin "$GITHUB_REF_NAME"   # se nel frattempo è arrivato un altro push
+            git push origin "HEAD:$GITHUB_REF_NAME"
           fi
 
       - name: Apri una issue con le novità
