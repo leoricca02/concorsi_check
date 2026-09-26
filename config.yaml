@@ -175,7 +175,7 @@ fonti:
   agcom:
     tipo: pagina
     ente: AGCOM
-    url: https://www.agcom.it/bandi-di-concorso1
+    url: https://www.agcom.it/taxonomy/term/262
 
   arera:
     tipo: pagina
@@ -190,7 +190,7 @@ fonti:
   senato:
     tipo: pagina
     ente: Senato della Repubblica
-    url: https://www.senato.it/relazioni-con-i-cittadini/amministrazione/concorsi/concorsi
+    url: https://concorsi.senato.it/   # senato.it blocca i controlli automatici (HTTP 202)
 
 # ---------------------------------------------------------------------------------------------
 # VERIFICA AI: legge il bando completo (anche il PDF) dei soli bandi già filtrati e scarta quelli
