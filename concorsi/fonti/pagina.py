@@ -17,9 +17,10 @@ from ..http import FonteError, Http
 from ..modelli import Bando
 from ..testo import indovina_posti, pulisci
 
+# solo parole da bando: la materia (informatica, cyber...) la giudica poi la valutazione
 FILTRO_LINK = (
-    r"concors|selezion|bando|bandi|avviso|assunzion|reclutament|esperti|funzionari|"
-    r"laureat|profil|posti|ict|informatic|data scien|cyber"
+    r"concors|selezion|\bband[oi]\b|avviso pubblico|assunzion|reclutament|interpello|"
+    r"posizion[ei] (aperte|lavorativ)|manifestazione d.interesse|ricerca di personale"
 )
 
 
