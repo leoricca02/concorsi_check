@@ -1,11 +1,12 @@
 import json
 from datetime import date
 
+from conftest import HttpFinto, leggi
+
 from concorsi import main as m
 from concorsi.duplicati import stesso_bando, stesso_ente, trova_su_inpa
 from concorsi.modelli import Bando
 from concorsi.stato import Stato
-from conftest import HttpFinto, leggi
 
 OGGI = date(2026, 9, 26)
 
@@ -24,10 +25,12 @@ def test_stesso_ente():
 
 def test_stesso_bando():
     gu = b("gu:1", "Concorso pubblico, per esami, per la copertura di venti posti di funzionario informatico, "
-                   "area dei funzionari, a tempo pieno ed indeterminato.", "Agenzia per la Cybersicurezza Nazionale", 20)
+                   "area dei funzionari, a tempo pieno ed indeterminato.",
+           "Agenzia per la Cybersicurezza Nazionale", 20)
     inpa = b("inpa:1", "Concorso per 20 funzionari informatici - area dei funzionari",
              "AGENZIA PER LA CYBERSICUREZZA NAZIONALE", 20, profilo="Funzionario informatico")
-    altro = b("inpa:2", "Concorso per 20 funzionari amministrativi contabili", "Agenzia per la Cybersicurezza Nazionale", 20)
+    altro = b("inpa:2", "Concorso per 20 funzionari amministrativi contabili",
+              "Agenzia per la Cybersicurezza Nazionale", 20)
     altri_posti = b("inpa:3", inpa.titolo, inpa.ente, 5, profilo=inpa.profilo)
     assert stesso_bando(gu, inpa)
     assert not stesso_bando(gu, altro)

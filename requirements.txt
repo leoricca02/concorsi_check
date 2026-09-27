@@ -1,5 +1,6 @@
-requests>=2.31
-beautifulsoup4>=4.12
-PyYAML>=6.0
-pypdf>=5.0
-anthropic>=1.0
+# versioni compatibili bloccate alla major: aggiornamenti di sicurezza sì, rotture no
+requests~=2.32
+beautifulsoup4~=4.12
+PyYAML~=6.0
+pypdf~=6.0
+anthropic~=1.0

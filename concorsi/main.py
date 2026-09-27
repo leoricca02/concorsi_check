@@ -177,8 +177,8 @@ def main(argv: list[str] | None = None) -> int:
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(md, encoding="utf-8")
     if args.issue_file:
-        Path(args.issue_file).write_text(md if len(md) < 60000 else md[:60000] + "\n\n…(troncato, vedi reports/ultimo.md)",
-                                         encoding="utf-8")
+        corpo = md if len(md) < 60000 else md[:60000] + "\n\n…(troncato, vedi reports/ultimo.md)"
+        Path(args.issue_file).write_text(corpo, encoding="utf-8")
     if not args.no_notifiche:
         notifica(cfg, ris, oggi)
     if not args.prova:

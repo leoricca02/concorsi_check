@@ -3,14 +3,13 @@ from datetime import date
 from types import SimpleNamespace
 
 import pytest
+from conftest import HttpFinto
 
+from concorsi import ai, report
 from concorsi import main as m
-from concorsi import report
-from concorsi import ai
 from concorsi.ai import ErroreAI, Verificatore
 from concorsi.modelli import Bando
 from concorsi.stato import Stato
-from conftest import HttpFinto
 
 OGGI = date(2026, 9, 26)
 GEMINI = "generativelanguage.googleapis.com"
@@ -137,10 +136,12 @@ def test_verifica_claude_parametri(monkeypatch, modello, beta, effort):
 
     def crea(**kw):
         chiamate.append(kw)
-        testo = json.dumps({"esito": "si", "laurea_richiesta": "LM", "classi_ammesse": "", "requisiti": "", "motivo": "ok"})
+        testo = json.dumps({"esito": "si", "laurea_richiesta": "LM", "classi_ammesse": "", "requisiti": "",
+                            "motivo": "ok"})
         return SimpleNamespace(stop_reason="end_turn", content=[SimpleNamespace(type="text", text=testo)])
 
-    finto = SimpleNamespace(messages=SimpleNamespace(create=crea), beta=SimpleNamespace(messages=SimpleNamespace(create=crea)))
+    messaggi = SimpleNamespace(create=crea)
+    finto = SimpleNamespace(messages=messaggi, beta=SimpleNamespace(messages=messaggi))
     monkeypatch.setattr(anthropic, "Anthropic", lambda **kw: finto)
     monkeypatch.setenv("ANTHROPIC_API_KEY", "k")
     v = Verificatore(cfg_ai(provider="anthropic", modello=modello), HttpFinto())

@@ -1,12 +1,13 @@
 import json
 from datetime import date
 
+from conftest import HttpFinto, leggi
+
 from concorsi import main as m
 from concorsi.modelli import Bando
 from concorsi.preferenze import Preferenze
 from concorsi.stato import Stato
 from concorsi.valutazione import Valutatore
-from conftest import HttpFinto, leggi
 
 OGGI = date(2026, 9, 26)
 

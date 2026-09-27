@@ -30,7 +30,7 @@ class Regola:
     laurea: str = ""              # etichetta del titolo di studio richiesto, se la regola lo rileva
 
     @classmethod
-    def da_config(cls, d: dict) -> "Regola":
+    def da_config(cls, d: dict) -> Regola:
         return cls(
             nome=d["nome"], peso=int(d.get("peso", 0)),
             pattern=[re.compile(p, re.I) for p in d["pattern"]],
@@ -86,9 +86,9 @@ class Valutatore:
             simile = "simile a bandi che ti sono piaciuti" if bonus > 0 else "simile a bandi che hai scartato"
             b.motivi.append(f"{simile} ({bonus:+d})")
         # se il bando cita sia magistrale sia triennale, basta la triennale
-        for l in ("triennale", "qualsiasi", "magistrale"):
-            if l in lauree:
-                b.laurea = l
+        for tipo in ("triennale", "qualsiasi", "magistrale"):
+            if tipo in lauree:
+                b.laurea = tipo
                 break
         if self.richieste and not (trovate & self.richieste):
             b.esclusione = "materia"

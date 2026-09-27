@@ -73,7 +73,7 @@ def test_richiesta_una_di_con_regola_inesistente():
 @pytest.mark.parametrize("titolo,ente,sede,atteso", [
     ("Concorso per 5 funzionari informatici", "Comune di Milano", "Lombardia, Milano", False),
     ("Concorso per 5 funzionari informatici", "Ministero dell'Interno", "Nazionale", True),
-    ("Concorso per 5 funzionari informatici", "Roma Capitale", "", True),       # Gazzetta: niente sede, si guarda l'ente
+    ("Concorso per 5 funzionari informatici", "Roma Capitale", "", True),  # Gazzetta: senza sede si guarda l'ente
     ("Concorso per 5 funzionari informatici", "Comune di Frosinone", "", False),
 ])
 def test_solo_roma(val, titolo, ente, sede, atteso):

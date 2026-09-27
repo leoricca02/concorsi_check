@@ -2,17 +2,18 @@ name: Test
 
 on:
   push:
-    paths-ignore: ["data/**", "reports/**"]
+    paths-ignore: ["data/**", "reports/**", "docs/bandi.json"]
   pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements-dev.txt
+      - run: ruff check concorsi tests
       - run: pytest -q

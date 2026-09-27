@@ -1,9 +1,10 @@
 import json
 from datetime import date
 
+from conftest import HttpFinto, leggi
+
 from concorsi import main as m
 from concorsi.stato import Stato
-from conftest import HttpFinto, leggi
 
 OGGI = date(2026, 9, 26)
 
@@ -63,7 +64,8 @@ def test_secondo_run_niente_di_nuovo_poi_nuovo_link(config, tmp_path):
     # la pagina di Banca d'Italia pubblica un nuovo bando informatico
     http = http_tutto()
     http.get_map["bancaditalia"] = leggi("pagina_bancaditalia.html").replace(
-        "</ul>", '<li><a href="/bandi/2026/bando-15-cyber/index.html">Concorso per 15 Esperti in cybersecurity</a></li></ul>')
+        "</ul>",
+        '<li><a href="/bandi/2026/bando-15-cyber/index.html">Concorso per 15 Esperti in cybersecurity</a></li></ul>')
     ris = m.esegui(cfg, Stato(percorso), http, OGGI)
     assert [b.titolo for b in ris.nuovi] == ["Concorso per 15 Esperti in cybersecurity"]
 

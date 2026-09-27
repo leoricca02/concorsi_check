@@ -177,6 +177,7 @@ fonti:
 
   ivass:
     tipo: pagina
+    attiva: false   # pubblica i bandi anche su inPA e in Gazzetta: fonte ridondante
     sede: Roma
     ente: IVASS
     url: https://www.ivass.it/chi-siamo/in-sintesi/lavorare-in-ivass/informazione-concorsi/index.html
@@ -189,24 +190,28 @@ fonti:
 
   agid:
     tipo: pagina
+    attiva: false   # pubblica i bandi anche su inPA e in Gazzetta: fonte ridondante
     sede: Roma
     ente: AgID
     url: https://www.agid.gov.it/it/agenzia/procedure-selezione
 
   istat:
     tipo: pagina
+    attiva: false   # pubblica i bandi anche su inPA e in Gazzetta: fonte ridondante
     sede: Roma
     ente: Istat
     url: https://www.istat.it/amministrazione-trasparente/bandi-di-concorso/
 
   agcom:
     tipo: pagina
+    attiva: false   # pubblica i bandi anche su inPA e in Gazzetta: fonte ridondante
     sede: Roma, Napoli
     ente: AGCOM
     url: https://www.agcom.it/taxonomy/term/262
 
   arera:
     tipo: pagina
+    attiva: false   # pubblica i bandi anche su inPA e in Gazzetta: fonte ridondante
     sede: Milano
     ente: ARERA
     url: https://www.arera.it/stampa-bandi-concorso

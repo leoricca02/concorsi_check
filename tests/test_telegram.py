@@ -1,6 +1,7 @@
 import json
 
-from concorsi import notifiche, telegram_voti as tv
+from concorsi import notifiche
+from concorsi import telegram_voti as tv
 from concorsi.preferenze import Preferenze
 
 

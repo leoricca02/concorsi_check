@@ -1,8 +1,8 @@
 import pytest
+from conftest import HttpFinto, leggi
 
 from concorsi.fonti import Gazzetta, Inpa, Pagina
 from concorsi.http import FonteError
-from conftest import HttpFinto, leggi
 
 INPA_CFG = {"categorie_escluse": ["Avvisi di mobilità"]}
 

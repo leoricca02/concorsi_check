@@ -3,7 +3,8 @@
   indice ultimi 30 giorni: {base}/30giorni/concorsi
      -> link ai fascicoli: /gazzetta/concorsi/caricaDettaglio?dataPubblicazioneGazzetta=YYYY-MM-DD&numeroGazzetta=NN
   sommario del fascicolo: sezioni in maiuscolo (AMMINISTRAZIONI CENTRALI, ENTI DI RICERCA, ...), poi il nome
-     dell'ente in maiuscolo e per ogni atto DUE link allo stesso URL .../caricaDettaglioAtto/originario?...codiceRedazionale=X:
+     dell'ente in maiuscolo e per ogni atto DUE link allo stesso URL
+     .../caricaDettaglioAtto/originario?...codiceRedazionale=X:
      il primo con il tipo ("CONCORSO (scad. 30 giugno 2026)", "MOBILITA'", "DIARIO", ...), il secondo col titolo.
 """
 from __future__ import annotations
@@ -65,7 +66,8 @@ class Gazzetta:
                     continue
                 codice, txt = m.group(1), pulisci(el.get_text(" "))
                 if codice not in atti:
-                    atti[codice] = {"tipo": txt, "titolo": "", "ente": ente, "sezione": sezione, "url": urljoin(self.base + "/", el["href"])}
+                    atti[codice] = {"tipo": txt, "titolo": "", "ente": ente, "sezione": sezione,
+                                    "url": urljoin(self.base + "/", el["href"])}
                 elif not atti[codice]["titolo"]:
                     atti[codice]["titolo"] = txt
             elif (isinstance(el, NavigableString) and not isinstance(el, Comment)
@@ -104,8 +106,10 @@ class Gazzetta:
         return out
 
 
-MINUSCOLE = {"di", "del", "della", "dello", "dei", "degli", "delle", "e", "ed", "per", "la", "il", "a", "in", "al", "alla"}
-SIGLE = {"asl", "aou", "irccs", "cnr", "inps", "inail", "istat", "enea", "infn", "asi", "ingv", "ispra", "crea", "inaf", "ats", "asst"}
+MINUSCOLE = {"di", "del", "della", "dello", "dei", "degli", "delle", "e", "ed", "per", "la", "il", "a", "in", "al",
+             "alla"}
+SIGLE = {"asl", "aou", "irccs", "cnr", "inps", "inail", "istat", "enea", "infn", "asi", "ingv", "ispra", "crea", "inaf",
+         "ats", "asst"}
 
 
 def _ente_leggibile(s: str) -> str:
