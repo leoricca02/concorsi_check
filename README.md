@@ -11,7 +11,7 @@ sono 2.000 minuti al mese gratuiti e un controllo ne usa 2-3). Non servono serve
 ## Come funziona
 
 ```
-GitHub Actions (ogni lunedì)
+GitHub Actions (martedì e venerdì)
    │
    ├─ inPA (API pubblica)            ~1.700 procedure aperte, lette tutte
    ├─ Gazzetta Ufficiale 4ª serie    ultimi fascicoli del martedì e venerdì
@@ -62,10 +62,10 @@ Le stelle nel report: ⭐⭐⭐ punteggio ≥ 12, ⭐⭐ ≥ 8, ⭐ il resto.
 
 ## Attivazione (10 minuti)
 
-1. **Scegli la frequenza** in `.github/workflows/controllo-concorsi.yml` (settimanale di default;
-   ci sono le righe pronte per "ogni due settimane" e "ogni mese"). Se controlli una volta al mese,
-   in `config.yaml` metti `fascicoli: 9` per la Gazzetta.
-2. **Primo controllo**: parte da solo a ogni modifica di `config.yaml`; oppure scheda *Actions* →
+1. **Scegli la frequenza** in `.github/workflows/controllo-concorsi.yml` (di default martedì e
+   venerdì, i giorni della Gazzetta; ci sono le righe pronte per "una volta a settimana" e "una volta
+   al mese"). Se controlli una volta al mese, in `config.yaml` metti `fascicoli: 9` per la Gazzetta.
+2. **Primo controllo**: parte da solo a ogni modifica di `config.yaml` o del codice; oppure scheda *Actions* →
    *Controllo concorsi* (nella colonna a sinistra, non "Test") → *Run workflow*. Al termine trovi
    il report in `reports/ultimo.md` e, se ci sono novità, una nuova issue.
 3. **Notifiche** (facoltative, in *Settings → Secrets and variables → Actions → New repository secret*):
