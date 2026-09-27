@@ -44,6 +44,19 @@ def _ai(b: Bando) -> str:
     return " · ".join(parti)
 
 
+def titolo(nuovi: list[Bando], in_scadenza: list[Bando]) -> str:
+    """Oggetto di email/issue: 'N nuovi, M in scadenza'."""
+    parti = [f"{len(nuovi)} nuovi rilevanti"] if nuovi or not in_scadenza else []
+    if in_scadenza:
+        parti.append(f"{len(in_scadenza)} in scadenza")
+    return ", ".join(parti)
+
+
+def _giorni(b: Bando, oggi: date) -> str:
+    n = (date.fromisoformat(b.scadenza) - oggi).days
+    return "oggi" if n == 0 else "domani" if n == 1 else f"tra {n} giorni"
+
+
 def _md(t: str) -> str:
     """Evita che parentesi quadre o asterischi nel titolo rompano il Markdown."""
     return t.replace("[", "(").replace("]", ")").replace("*", "")
@@ -58,8 +71,13 @@ def _data(iso: str) -> str:
 
 def markdown(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], oggi: date,
              letti: dict[str, int] | None = None, scartati: list[Bando] | None = None,
-             quasi: list[Bando] | None = None) -> str:
+             quasi: list[Bando] | None = None, in_scadenza: list[Bando] | None = None) -> str:
     righe = [f"# Concorsi — controllo del {oggi.strftime('%d/%m/%Y')}", ""]
+    if in_scadenza:
+        righe += [f"## ⏰ In scadenza ({len(in_scadenza)})", ""]
+        righe += [f"- **{_giorni(b, oggi)}** ({_data(b.scadenza)}): [{_md(b.titolo)}]({b.url}) — {b.ente}"
+                  for b in in_scadenza]
+        righe.append("")
     if nuovi:
         righe += [f"## 🆕 Nuovi concorsi rilevanti ({len(nuovi)})", ""]
         for b in ordina(nuovi):
@@ -100,9 +118,15 @@ def markdown(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], og
     return "\n".join(righe)
 
 
-def html_email(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], oggi: date) -> str:
+def html_email(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], oggi: date,
+               in_scadenza: list[Bando] | None = None) -> str:
     e = html.escape
     parti = [f"<h2>Concorsi — controllo del {oggi.strftime('%d/%m/%Y')}</h2>"]
+    if in_scadenza:
+        parti.append(f"<h3>⏰ In scadenza ({len(in_scadenza)})</h3><ul>")
+        parti += [f"<li><b>{_giorni(b, oggi)}</b> ({_data(b.scadenza)}): "
+                  f"<a href=\"{e(b.url)}\">{e(b.titolo)}</a> — {e(b.ente)}</li>" for b in in_scadenza]
+        parti.append("</ul>")
     if nuovi:
         parti.append(f"<h3>🆕 Nuovi concorsi rilevanti ({len(nuovi)})</h3><ul>")
         for b in ordina(nuovi):
@@ -124,8 +148,11 @@ def html_email(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], 
     return "\n".join(parti)
 
 
-def testo_semplice(nuovi: list[Bando], errori: dict[str, str], oggi: date) -> str:
-    righe = [f"Concorsi — {oggi.strftime('%d/%m/%Y')}: {len(nuovi)} nuovi rilevanti", ""]
+def testo_semplice(nuovi: list[Bando], errori: dict[str, str], oggi: date,
+                   in_scadenza: list[Bando] | None = None) -> str:
+    righe = [f"Concorsi — {oggi.strftime('%d/%m/%Y')}: {titolo(nuovi, in_scadenza or [])}", ""]
+    for b in in_scadenza or []:
+        righe += [f"⏰ {_giorni(b, oggi)}: {b.titolo}", b.url, ""]
     for b in ordina(nuovi):
         righe += [f"{stelle(b)} {b.titolo}", " · ".join(_dettagli(b)), *([_ai(b)] if b.ai else []), b.url, ""]
     if errori:

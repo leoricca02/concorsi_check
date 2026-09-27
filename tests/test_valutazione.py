@@ -95,7 +95,10 @@ def test_universita_e_categorie_protette_escluse(val, titolo, ente):
 def test_motivo_esclusione_e_quasi_rilevanti(val):
     fuori = bando("Concorso per 5 funzionari informatici", "laurea magistrale", "Comune di Milano",
                   sede="Lombardia, Milano")
-    assert not val.valuta(fuori) and fuori.esclusione == "sede" and val.quasi_rilevante(fuori)
+    assert not val.valuta(fuori) and fuori.esclusione == "sede" and not val.quasi_rilevante(fuori)
+    lazio = bando("Concorso per 5 funzionari informatici", "laurea magistrale", "Comune di Latina",
+                  sede="Lazio, Latina")
+    assert not val.valuta(lazio) and lazio.esclusione == "sede" and val.quasi_rilevante(lazio)
     legale = bando("Concorso per 1 funzionario legale", "laurea magistrale in giurisprudenza")
     assert not val.valuta(legale) and legale.esclusione == "materia" and not val.quasi_rilevante(legale)
     mobilita = bando("Mobilità per funzionario informatico")

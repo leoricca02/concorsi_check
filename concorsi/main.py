@@ -5,7 +5,7 @@ import argparse
 import logging
 import os
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import requests
@@ -30,6 +30,7 @@ class Risultato:
     letti: dict[str, int] = field(default_factory=dict)
     scartati_ai: list[Bando] = field(default_factory=list)
     quasi: list[Bando] = field(default_factory=list)
+    in_scadenza: list[Bando] = field(default_factory=list)
 
 
 def controlla_quantita(nome: str, letti: int, stato: Stato, ris: Risultato) -> None:
@@ -81,8 +82,17 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
         stato.segna_fonte_inizializzata(nome)
     verifica_ai(cfg.get("ai") or {}, http, stato, ris, oggi)
     ris.aperti = stato.ancora_aperti(oggi, esclusi={b.id for b in ris.nuovi})
+    ris.in_scadenza = in_scadenza(ris.nuovi + ris.aperti, oggi,
+                                  int((cfg.get("notifiche") or {}).get("giorni_scadenza", 7)))
     stato.pulisci(oggi)
     return ris
+
+
+def in_scadenza(bandi: list[Bando], oggi: date, giorni: int) -> list[Bando]:
+    """Bandi rilevanti che scadono entro `giorni` giorni, dal più urgente."""
+    limite = (oggi + timedelta(days=giorni)).isoformat()
+    return sorted((b for b in bandi if b.scadenza and oggi.isoformat() <= b.scadenza <= limite),
+                  key=lambda b: b.scadenza)
 
 
 def verifica_ai(cfg: dict, http: Http, stato: Stato, ris: Risultato, oggi: date) -> None:
@@ -104,14 +114,14 @@ def verifica_ai(cfg: dict, http: Http, stato: Stato, ris: Risultato, oggi: date)
 
 def notifica(cfg: dict, ris: Risultato, oggi: date) -> None:
     ncfg = cfg.get("notifiche", {})
-    if not ris.nuovi and not (ris.errori and ncfg.get("segnala_errori", True)) \
+    if not ris.nuovi and not ris.in_scadenza and not (ris.errori and ncfg.get("segnala_errori", True)) \
             and not ncfg.get("anche_senza_novita", False):
         log.info("niente di nuovo: nessuna notifica")
         return
-    oggetto = f"Concorsi: {len(ris.nuovi)} nuovi rilevanti ({oggi.strftime('%d/%m/%Y')})"
-    testo = report.testo_semplice(ris.nuovi, ris.errori, oggi)
+    oggetto = f"Concorsi: {report.titolo(ris.nuovi, ris.in_scadenza)} ({oggi.strftime('%d/%m/%Y')})"
+    testo = report.testo_semplice(ris.nuovi, ris.errori, oggi, ris.in_scadenza)
     for nome, invia in (("email", lambda: notifiche.email(oggetto, testo, report.html_email(
-            ris.nuovi, ris.aperti, ris.errori, oggi))), ("telegram", lambda: notifiche.telegram(testo))):
+            ris.nuovi, ris.aperti, ris.errori, oggi, ris.in_scadenza))), ("telegram", lambda: notifiche.telegram(testo))):
         try:
             if not invia():
                 log.info("%s non configurato", nome)
@@ -137,7 +147,7 @@ def main(argv: list[str] | None = None) -> int:
     ris = esegui(cfg, stato, Http(pausa=float(cfg.get("pausa_tra_richieste", 1.0))), oggi)
 
     md = report.markdown(ris.nuovi, ris.aperti, ris.errori, oggi, ris.letti, ris.scartati_ai,
-                         ris.quasi)
+                         ris.quasi, ris.in_scadenza)
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(md, encoding="utf-8")
     if args.issue_file:
@@ -152,6 +162,7 @@ def main(argv: list[str] | None = None) -> int:
              len(ris.nuovi), len(ris.aperti), len(ris.errori))
     if os.environ.get("GITHUB_OUTPUT"):
         with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
-            f.write(f"nuovi={len(ris.nuovi)}\nerrori={len(ris.errori)}\n")
+            f.write(f"nuovi={len(ris.nuovi)}\nerrori={len(ris.errori)}\nin_scadenza={len(ris.in_scadenza)}\n"
+                    f"titolo={report.titolo(ris.nuovi, ris.in_scadenza)}\n")
     # errore solo se TUTTE le fonti sono fallite: così il workflow diventa rosso e GitHub ti avvisa
     return 1 if ris.errori and not ris.letti else 0

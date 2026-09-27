@@ -53,6 +53,7 @@ class Valutatore:
         self.ignora = [re.compile(p, re.I) for p in profilo.get("frasi_da_ignorare", [])]
         self.sedi = [re.compile(p, re.I) for p in profilo.get("sedi_ammesse", [])]
         self.margine = int(profilo.get("margine_quasi_rilevanti", 2))
+        self.sedi_quasi = [re.compile(p, re.I) for p in profilo.get("sedi_quasi_rilevanti", [])]
 
     def sede_ammessa(self, b: Bando) -> bool:
         """Senza sede esplicita (es. Gazzetta) si cerca la città nel titolo e nel nome dell'ente."""
@@ -94,5 +95,7 @@ class Valutatore:
 
     def quasi_rilevante(self, b: Bando) -> bool:
         """Bando in materia scartato solo per la sede o per pochi punti: utile per controllare i filtri."""
-        return ((b.esclusione == "sede" and b.punteggio >= self.soglia)
+        dove = b.sede or f"{b.titolo} {b.ente}"
+        vicino = any(p.search(dove) for p in self.sedi_quasi)
+        return ((b.esclusione == "sede" and vicino and b.punteggio >= self.soglia)
                 or (b.esclusione == "soglia" and b.punteggio >= self.soglia - self.margine))

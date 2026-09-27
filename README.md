@@ -1,6 +1,6 @@
 # Concorsi Check
 
-Controlla da solo, ogni settimana (o ogni due settimane, o una volta al mese), i siti dei concorsi
+Controlla da solo, il martedì e il venerdì (quando esce la Gazzetta Ufficiale), i siti dei concorsi
 pubblici italiani e ti avvisa solo per quelli adatti al tuo profilo: laurea magistrale in
 Engineering in Computer Science (LM-32), laurea triennale in Ingegneria Informatica (L-8),
 interesse per software, dati, AI e cybersecurity.

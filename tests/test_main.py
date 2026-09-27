@@ -126,13 +126,12 @@ def test_quasi_rilevanti_segnalati_una_volta(config, tmp_path):
     percorso = tmp_path / "s.json"
     stato = Stato(percorso)
     ris = m.esegui(cfg, stato, http_tutto(), OGGI)
-    # Frosinone: istruttore -> penalizzato, non quasi; nel fixture non ci sono quasi-rilevanti per sede,
-    # quindi aggiungiamo un bando informatico fuori Roma
+    # nel fixture non ci sono quasi-rilevanti; poi aggiungiamo un bando informatico a Latina
     assert all(b.esclusione in ("sede", "soglia") for b in ris.quasi)
     stato.salva(OGGI)
     http = http_tutto()
     http.get_map["caricaDettaglio"] = leggi("gu_sommario.html").replace(
-        "COMUNE DI FROSINONE", "COMUNE DI MILANO").replace(
+        "COMUNE DI FROSINONE", "COMUNE DI LATINA").replace(
         "un posto di istruttore amministrativo, area degli istruttori", "cinque posti di funzionario informatico")
     ris = m.esegui(cfg, Stato(percorso), http, OGGI)
     assert [b.id for b in ris.quasi] == ["gu:26E01240"]

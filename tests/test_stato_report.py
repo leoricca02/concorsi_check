@@ -54,3 +54,31 @@ def test_testo_helper():
     assert indovina_posti("copertura di due posti di categoria D") == 2
     assert indovina_posti("Concorso per un posto di dirigente") == 1
     assert indovina_posti("Concorso pubblico per funzionario") is None
+
+
+def test_in_scadenza_e_report():
+    from concorsi.main import in_scadenza
+    b = lambda i, s: Bando(id=i, fonte="f", titolo=f"T{i}", url="u", ente="E", scadenza=s)
+    bandi = [b("tra3", "2026-09-29"), b("oggi", "2026-09-26"), b("lontano", "2026-10-20"), b("senza", ""),
+             b("scaduto", "2026-09-25")]
+    urgenti = in_scadenza(bandi, OGGI, 7)
+    assert [x.id for x in urgenti] == ["oggi", "tra3"]
+    md = report.markdown([], [], {}, OGGI, in_scadenza=urgenti)
+    assert "## ⏰ In scadenza (2)" in md and "**oggi** (26/09/2026)" in md and "**tra 3 giorni**" in md
+    assert report.titolo([], urgenti) == "2 in scadenza"
+    assert report.titolo(urgenti[:1], urgenti) == "1 nuovi rilevanti, 2 in scadenza"
+    assert report.titolo([], []) == "0 nuovi rilevanti"
+    assert "⏰ domani" in report.testo_semplice([], {}, date(2026, 9, 28), urgenti[1:])
+    assert "⏰ In scadenza" in report.html_email([], [], {}, OGGI, urgenti)
+
+
+def test_notifica_anche_solo_per_scadenze(monkeypatch):
+    from concorsi import main as m
+    inviati = []
+    monkeypatch.setattr(m.notifiche, "email", lambda ogg, t, h: inviati.append(ogg) or True)
+    monkeypatch.setattr(m.notifiche, "telegram", lambda t: True)
+    urg = [Bando(id="a", fonte="f", titolo="T", url="u", scadenza="2026-09-28")]
+    m.notifica({}, m.Risultato(), OGGI)
+    assert inviati == []
+    m.notifica({}, m.Risultato(in_scadenza=urg), OGGI)
+    assert inviati == ["Concorsi: 1 in scadenza (26/09/2026)"]

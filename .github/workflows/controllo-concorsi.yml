@@ -3,8 +3,8 @@ name: Controllo concorsi
 on:
   schedule:
     # Quando controllare (orari in UTC: in Italia +1 d'inverno, +2 d'estate). Scegli UNA riga:
-    - cron: "17 6 * * 1"        # ogni lunedì alle 6:17 UTC
-    # - cron: "17 6 1,15 * *"   # due volte al mese (giorno 1 e 15)
+    - cron: "17 6 * * 2,5"      # martedì e venerdì alle 6:17 UTC, i giorni in cui esce la Gazzetta
+    # - cron: "17 6 * * 1"      # una volta a settimana (lunedì)
     # - cron: "17 6 1 * *"      # una volta al mese
   workflow_dispatch:            # pulsante "Run workflow" nella scheda Actions, per un controllo immediato
   push:                         # e subito dopo ogni modifica alla configurazione o al codice
@@ -62,10 +62,10 @@ jobs:
           fi
 
       - name: Apri una issue con le novità
-        if: fromJSON(steps.controllo.outputs.nuovi || '0') > 0
+        if: fromJSON(steps.controllo.outputs.nuovi || '0') > 0 || fromJSON(steps.controllo.outputs.in_scadenza || '0') > 0
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh issue create \
-            --title "🆕 ${{ steps.controllo.outputs.nuovi }} nuovi concorsi rilevanti ($(date +%d/%m/%Y))" \
+            --title "Concorsi: ${{ steps.controllo.outputs.titolo }} ($(date +%d/%m/%Y))" \
             --body-file "$RUNNER_TEMP/issue.md"

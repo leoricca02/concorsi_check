@@ -1,6 +1,6 @@
 # Configurazione di Concorsi Check.
 # Si modifica tutto da qui: fonti da controllare, parole chiave, soglia di rilevanza, notifiche.
-# (La frequenza dei controlli si cambia in .github/workflows/controllo-concorsi.yml)
+# (La frequenza dei controlli (martedì e venerdì) si cambia in .github/workflows/controllo-concorsi.yml)
 
 pausa_tra_richieste: 1.0   # secondi tra una richiesta e l'altra, per non disturbare i siti
 
@@ -15,6 +15,10 @@ pausa_tra_richieste: 1.0   # secondi tra una richiesta e l'altra, per non distur
 # ---------------------------------------------------------------------------------------------
 profilo:
   soglia: 5
+  # "Quasi rilevanti" per sede: solo se la sede è comunque nel Lazio (il resto d'Italia non interessa)
+  sedi_quasi_rilevanti: ["\\blazio\\b", "frosinone", "latina", "rieti", "viterbo", "fiumicino", "guidonia",
+                         "tivoli", "pomezia", "civitavecchia", "velletri", "anzio", "nettuno", "aprilia",
+                         "frascati", "colleferro", "ciampino", "marino", "monterotondo", "ladispoli", "cerveteri"]
   margine_quasi_rilevanti: 2   # nel report, sezione "quasi rilevanti": fino a 2 punti sotto la soglia
   soglia_dettaglio: 2   # da questo punteggio in su si scarica il dettaglio inPA (requisiti completi)
 
@@ -155,7 +159,7 @@ fonti:
 
   gazzetta_ufficiale:
     tipo: gazzetta
-    fascicoli: 4             # ultimi 4 numeri (~2 settimane); se controlli ogni mese metti 9
+    fascicoli: 3             # la GU esce martedì e venerdì: 3 numeri coprono con margine due controlli a settimana
     fascicoli_primo_run: 9   # al primo avvio guarda circa l'ultimo mese
 
   banca_italia:
@@ -247,5 +251,6 @@ ai:
 # In più il workflow apre una issue su GitHub ad ogni controllo con novità.
 # ---------------------------------------------------------------------------------------------
 notifiche:
+  giorni_scadenza: 7          # avvisa dei bandi rilevanti che scadono entro questi giorni
   segnala_errori: true        # avvisa anche quando una fonte non risponde
   anche_senza_novita: false   # true = ricevi un messaggio anche quando non c'è nulla di nuovo
