@@ -32,8 +32,23 @@ def email(oggetto: str, testo: str, html: str) -> bool:
     return True
 
 
-def telegram(testo: str) -> bool:
-    """TELEGRAM_BOT_TOKEN (da @BotFather) e TELEGRAM_CHAT_ID (il tuo id utente)."""
+API_TELEGRAM = "https://api.telegram.org/bot{token}/{metodo}"
+PULSANTI = [("👍", "like"), ("👎", "dislike"), ("✉️ Candidato", "candidato")]
+
+
+def chiama_telegram(metodo: str, **dati) -> dict:
+    r = requests.post(API_TELEGRAM.format(token=os.environ["TELEGRAM_BOT_TOKEN"], metodo=metodo),
+                      json=dati, timeout=30)
+    r.raise_for_status()
+    return r.json()
+
+
+def telegram(testo: str, bandi: list[tuple[str, str]] | None = None) -> bool:
+    """TELEGRAM_BOT_TOKEN (da @BotFather) e TELEGRAM_CHAT_ID (il tuo id utente).
+
+    Manda `testo` come riepilogo e poi un messaggio per ogni (id, testo) in `bandi`, con i pulsanti
+    👍/👎/candidato: i tocchi vengono letti da `python -m concorsi.telegram_voti`.
+    """
     token, chat = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
     if not (token and chat):
         return False
@@ -46,8 +61,10 @@ def telegram(testo: str) -> bool:
         corrente += riga[:4000]
     blocchi.append(corrente)
     for b in filter(str.strip, blocchi):
-        r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage",
-                          json={"chat_id": chat, "text": b, "disable_web_page_preview": True}, timeout=30)
-        r.raise_for_status()
-    log.info("messaggio Telegram inviato")
+        chiama_telegram("sendMessage", chat_id=chat, text=b, disable_web_page_preview=True)
+    for id_, testo_bando in bandi or []:
+        tastiera = [[{"text": t, "callback_data": f"v:{v}:{id_}"[:64]} for t, v in PULSANTI]]
+        chiama_telegram("sendMessage", chat_id=chat, text=testo_bando[:4000], disable_web_page_preview=True,
+                        reply_markup={"inline_keyboard": tastiera})
+    log.info("messaggi Telegram inviati (%d bandi)", len(bandi or []))
     return True

@@ -141,7 +141,9 @@ def notifica(cfg: dict, ris: Risultato, oggi: date) -> None:
     oggetto = f"Concorsi: {report.titolo(ris.nuovi, ris.in_scadenza)} ({oggi.strftime('%d/%m/%Y')})"
     testo = report.testo_semplice(ris.nuovi, ris.errori, oggi, ris.in_scadenza)
     for nome, invia in (("email", lambda: notifiche.email(oggetto, testo, report.html_email(
-            ris.nuovi, ris.aperti, ris.errori, oggi, ris.in_scadenza))), ("telegram", lambda: notifiche.telegram(testo))):
+            ris.nuovi, ris.aperti, ris.errori, oggi, ris.in_scadenza))), ("telegram", lambda: notifiche.telegram(
+                report.riepilogo_telegram(ris.nuovi, ris.errori, oggi, ris.in_scadenza),
+                [(b.id, report.messaggio_bando(b)) for b in report.ordina(ris.nuovi)[:20]]))):
         try:
             if not invia():
                 log.info("%s non configurato", nome)

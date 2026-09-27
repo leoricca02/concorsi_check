@@ -74,9 +74,10 @@ Le stelle nel report: ⭐⭐⭐ punteggio ≥ 12, ⭐⭐ ≥ 8, ⭐ il resto.
    - **Email (Gmail)**: `EMAIL_USER` = il tuo indirizzo Gmail, `EMAIL_PASSWORD` = una
      [password per le app](https://myaccount.google.com/apppasswords) (serve la verifica in due
      passaggi), `EMAIL_TO` = destinatario (facoltativo, di default te stesso).
-   - **Telegram** (notifica sul telefono): crea un bot con [@BotFather](https://t.me/BotFather) →
-     `TELEGRAM_BOT_TOKEN`; scrivi un messaggio al bot e prendi il tuo id da
-     `https://api.telegram.org/bot<TOKEN>/getUpdates` → `TELEGRAM_CHAT_ID`.
+   - **Telegram** (notifica sul telefono, con i pulsanti 👍/👎 sotto ogni bando): crea un bot con
+     [@BotFather](https://t.me/BotFather) → `TELEGRAM_BOT_TOKEN`; scrivi un messaggio al bot e prendi
+     il tuo id da `https://api.telegram.org/bot<TOKEN>/getUpdates` → `TELEGRAM_CHAT_ID`. I tocchi sui
+     pulsanti vengono salvati ogni ora dal workflow *Voti da Telegram* (che ha anche un pulsante di prova).
 
 > Nota: le esecuzioni programmate partono solo dal branch predefinito del repository.
 

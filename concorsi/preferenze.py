@@ -42,6 +42,19 @@ class Preferenze:
         get = d.get if isinstance(d, dict) else lambda k, _=None: getattr(d, k, "")
         return parole(f"{get('titolo', '')} {get('ente', '')} {get('profilo', '')}")
 
+    def vota(self, id_: str, voto: str, bando: dict, oggi: str) -> None:
+        """Registra un voto; lo stesso voto ripetuto lo toglie (come nella pagina web)."""
+        if self.voti.get(id_, {}).get("voto") == voto:
+            del self.voti[id_]
+        else:
+            self.voti[id_] = {"voto": voto, "titolo": bando.get("titolo", ""), "ente": bando.get("ente", ""),
+                              "profilo": bando.get("profilo", ""), "data": oggi}
+
+    def salva(self) -> None:
+        self.percorso.parent.mkdir(parents=True, exist_ok=True)
+        self.percorso.write_text(json.dumps({"voti": self.voti}, ensure_ascii=False, indent=1) + "\n",
+                                 encoding="utf-8")
+
     @property
     def nascosti(self) -> set[str]:
         return {i for i, v in self.voti.items() if v.get("voto") == "dislike"}

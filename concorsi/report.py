@@ -158,3 +158,18 @@ def testo_semplice(nuovi: list[Bando], errori: dict[str, str], oggi: date,
     if errori:
         righe.append("⚠️ Fonti con problemi: " + ", ".join(errori))
     return "\n".join(righe)
+
+
+def riepilogo_telegram(nuovi: list[Bando], errori: dict[str, str], oggi: date,
+                       in_scadenza: list[Bando] | None = None) -> str:
+    """Primo messaggio Telegram: conteggi e scadenze (i bandi nuovi arrivano dopo, uno per messaggio)."""
+    righe = [f"Concorsi — {oggi.strftime('%d/%m/%Y')}: {titolo(nuovi, in_scadenza or [])}"]
+    for b in in_scadenza or []:
+        righe += ["", f"⏰ {_giorni(b, oggi)}: {b.titolo}", b.url]
+    if errori:
+        righe += ["", "⚠️ Fonti con problemi: " + ", ".join(errori)]
+    return "\n".join(righe)
+
+
+def messaggio_bando(b: Bando) -> str:
+    return "\n".join([f"{stelle(b)} {b.titolo}", " · ".join(_dettagli(b)), *([_ai(b)] if b.ai else []), b.url])
