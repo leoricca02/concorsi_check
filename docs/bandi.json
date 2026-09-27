@@ -1,0 +1,59 @@
+{
+ "aggiornato": "2026-09-27",
+ "bandi": [
+  {
+   "id": "gu:26E04863",
+   "titolo": "Selezione pubblica per l'ammissione di cinque praticanti con adeguata formazione in materie relative all'informatica, a tempo determinato della durata massima di dodici mesi non prorogabili.",
+   "url": "https://www.gazzettaufficiale.it/atto/concorsi/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-09-08&atto.codiceRedazionale=26E04863",
+   "ente": "Autorita' Garante della Concorrenza e del Mercato",
+   "sede": "Nazionale",
+   "scadenza": "2026-09-28",
+   "pubblicazione": "2026-09-08",
+   "posti": null,
+   "laurea": "",
+   "punteggio": 7,
+   "motivi": [
+    "profilo informatico/ICT (+6)",
+    "Roma/Lazio o nazionale (+1)"
+   ],
+   "ai": {
+    "classi_ammesse": "",
+    "esito": "forse",
+    "laurea_richiesta": "adeguata formazione in materie relative all'informatica",
+    "motivo": "Il bando è attinente all'informatica e il candidato ha il titolo idoneo, ma il testo disponibile è troppo sintetico e non riporta i requisiti specifici di ammissione.",
+    "requisiti": "Il testo sintetico non specifica classi di laurea ammesse, voto minimo o esperienza richiesta."
+   },
+   "fonte": "gazzetta_ufficiale",
+   "profilo": "",
+   "nuovo": false
+  },
+  {
+   "id": "gu:26E04793",
+   "titolo": "Concorso pubblico, per titoli ed esami, per la copertura di un posto di ricercatore sanitario - profilo bioinformatico, categoria DS, a tempo pieno e determinato della durata di cinque anni eventualmente rinnovabili.",
+   "url": "https://www.gazzettaufficiale.it/atto/concorsi/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-09-04&atto.codiceRedazionale=26E04793",
+   "ente": "Istituto Nazionale per Le Malattie Infettive «lazzaro Spallanzani» di Roma",
+   "sede": "",
+   "scadenza": "2026-10-04",
+   "pubblicazione": "2026-09-04",
+   "posti": 1,
+   "laurea": "",
+   "punteggio": 7,
+   "motivi": [
+    "profilo informatico/ICT (+6)",
+    "Roma/Lazio o nazionale (+1)"
+   ],
+   "ai": {
+    "classi_ammesse": "",
+    "esito": "forse",
+    "laurea_richiesta": "Laurea magistrale in discipline scientifiche o bioinformatica",
+    "motivo": "Il testo sintetico della Gazzetta Ufficiale non specifica i requisiti dettagliati di accesso, le classi di laurea ammesse e l'esperienza.",
+    "requisiti": "Essere in possesso di titolo di studio idoneo per ricercatore sanitario, profilo bioinformatico."
+   },
+   "fonte": "gazzetta_ufficiale",
+   "profilo": "",
+   "nuovo": false
+  }
+ ],
+ "modello_attivo": false,
+ "voti_totali": 0
+}
