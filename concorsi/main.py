@@ -13,6 +13,7 @@ import yaml
 
 from . import notifiche, report
 from .ai import ErroreAI, Verificatore
+from .duplicati import trova_su_inpa
 from .fonti import TIPI
 from .http import FonteError, Http
 from .modelli import Bando
@@ -46,6 +47,7 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
     val = Valutatore(cfg["profilo"])
     soglia_dettaglio = int(cfg["profilo"].get("soglia_dettaglio", 2))
     ris = Risultato()
+    inpa: list[Bando] = []   # bandi inPA letti in questo run, per riconoscere i doppioni (inPA va letta per prima)
     for nome, fcfg in cfg["fonti"].items():
         if not fcfg.get("attiva", True):
             continue
@@ -57,6 +59,8 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
             ris.errori[nome] = str(e) or type(e).__name__
             continue
         ris.letti[nome] = len(bandi)
+        if fcfg["tipo"] == "inpa":
+            inpa += bandi
         controlla_quantita(nome, len(bandi), stato, ris)
         # Le pagine generiche al primo controllo contengono anche bandi vecchi: di default
         # li memorizziamo senza segnalarli, e da lì in poi segnaliamo solo i link nuovi.
@@ -65,6 +69,14 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
         for b in bandi:
             if b.id in stato.dati["segnalati"] or (b.scadenza and b.scadenza < oggi.isoformat()):
                 continue
+            gemello = trova_su_inpa(b, inpa)
+            if gemello:
+                if gemello.id in stato.dati["segnalati"]:
+                    continue          # già segnalato (ora o in passato) nella versione inPA
+                # stesso bando su inPA ma non segnalato lì: prendiamo i dati migliori da inPA
+                b.documento = gemello.documento or b.documento
+                b.sede = b.sede or gemello.sede
+                b.scadenza = b.scadenza or gemello.scadenza
             rilevante = val.valuta(b)
             if (hasattr(fonte, "arricchisci") and b.punteggio >= soglia_dettaglio
                     and not stato.gia_visto(b.id)):
@@ -80,8 +92,8 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
                 if not silenzioso:
                     ris.quasi.append(b)
         stato.segna_fonte_inizializzata(nome)
-    verifica_ai(cfg.get("ai") or {}, http, stato, ris, oggi)
     ris.aperti = stato.ancora_aperti(oggi, esclusi={b.id for b in ris.nuovi})
+    verifica_ai(cfg.get("ai") or {}, http, stato, ris, oggi)
     ris.in_scadenza = in_scadenza(ris.nuovi + ris.aperti, oggi,
                                   int((cfg.get("notifiche") or {}).get("giorni_scadenza", 7)))
     stato.pulisci(oggi)
@@ -100,7 +112,9 @@ def verifica_ai(cfg: dict, http: Http, stato: Stato, ris: Risultato, oggi: date)
     ver = Verificatore(cfg, http) if cfg else None
     if not (ver and ver.attivo):
         return
-    for b in report.ordina(ris.nuovi)[: int(cfg.get("max_bandi_per_run", 40))]:
+    # prima i nuovi, poi quelli segnalati in passato rimasti senza verifica (errore o limite raggiunto)
+    candidati = report.ordina(ris.nuovi) + [b for b in ris.aperti if b.ai is None]
+    for b in candidati[: int(cfg.get("max_bandi_per_run", 40))]:
         try:
             b.ai = ver.verifica(b)
         except ErroreAI as e:
@@ -108,8 +122,10 @@ def verifica_ai(cfg: dict, http: Http, stato: Stato, ris: Risultato, oggi: date)
             ris.errori["verifica AI"] = str(e)
             break
         stato.segna_segnalato(b, oggi)
-    ris.scartati_ai = [b for b in ris.nuovi if b.ai and b.ai["esito"] == "no"]
-    ris.nuovi = [b for b in ris.nuovi if not (b.ai and b.ai["esito"] == "no")]
+    no = lambda b: bool(b.ai and b.ai["esito"] == "no")
+    ris.scartati_ai = [b for b in ris.nuovi + ris.aperti if no(b)]
+    ris.nuovi = [b for b in ris.nuovi if not no(b)]
+    ris.aperti = [b for b in ris.aperti if not no(b)]
 
 
 def notifica(cfg: dict, ris: Risultato, oggi: date) -> None:

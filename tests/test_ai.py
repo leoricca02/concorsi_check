@@ -158,3 +158,19 @@ def test_claude_rifiuto_e_un_errore(monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "k")
     with pytest.raises(ErroreAI):
         Verificatore(cfg_ai(provider="anthropic"), HttpFinto()).verifica(Bando(id="x", fonte="f", titolo="T", url="u"))
+
+
+def test_ritenta_i_segnalati_senza_verifica(chiave, tmp_path):
+    http = HttpFinto(post={GEMINI: risposta_gemini(esito="no", motivo="serve LM-56")})
+    stato = Stato(tmp_path / "s.json")
+    vecchio = Bando(id="v", fonte="f", titolo="Vecchio", url="https://v", scadenza="2026-12-01")
+    stato.segna_segnalato(vecchio, OGGI)
+    ris = m.Risultato(aperti=stato.ancora_aperti(OGGI, set()))
+    m.verifica_ai(cfg_ai(), http, stato, ris, OGGI)
+    assert ris.aperti == [] and [b.id for b in ris.scartati_ai] == ["v"]
+    assert stato.dati["segnalati"]["v"]["ai"]["esito"] == "no"
+    # al giro dopo è già verificato: nessuna nuova chiamata
+    n = len(http.corpi)
+    ris = m.Risultato(aperti=stato.ancora_aperti(OGGI, set()))
+    m.verifica_ai(cfg_ai(), http, stato, ris, OGGI)
+    assert len(http.corpi) == n
