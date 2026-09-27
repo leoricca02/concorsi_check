@@ -52,6 +52,7 @@ class Valutatore:
             raise ValueError(f"richiesta_una_di cita regole inesistenti: {sorted(sconosciute)}")
         self.ignora = [re.compile(p, re.I) for p in profilo.get("frasi_da_ignorare", [])]
         self.sedi = [re.compile(p, re.I) for p in profilo.get("sedi_ammesse", [])]
+        self.margine = int(profilo.get("margine_quasi_rilevanti", 2))
 
     def sede_ammessa(self, b: Bando) -> bool:
         """Senza sede esplicita (es. Gazzetta) si cerca la città nel titolo e nel nome dell'ente."""
@@ -59,21 +60,19 @@ class Valutatore:
         return not self.sedi or any(p.search(dove) for p in self.sedi)
 
     def valuta(self, b: Bando) -> bool:
-        """Calcola punteggio e motivi; True se il bando va segnalato."""
+        """Calcola punteggio, motivi ed eventuale `esclusione`; True se il bando va segnalato."""
         titolo = f"{b.titolo} {b.ente} {b.profilo}"
         testo = b.testo
         for p in self.ignora:
             testo = p.sub(" ", testo)
         tutto = f"{titolo} {testo} {b.sede}"
-        b.punteggio, b.motivi, b.laurea, lauree, trovate = 0, [], "", [], set()
-        if not self.sede_ammessa(b):
-            b.punteggio, b.motivi = -99, ["escluso: sede non ammessa"]
-            return False
+        b.punteggio, b.motivi, b.laurea, b.esclusione = 0, [], "", ""
+        lauree, trovate = [], set()
         for r in self.regole:
             if not r.corrisponde(titolo, tutto):
                 continue
             if r.escludi:
-                b.punteggio, b.motivi = -99, [f"escluso: {r.nome}"]
+                b.punteggio, b.motivi, b.esclusione = -99, [f"escluso: {r.nome}"], r.nome
                 return False
             trovate.add(r.nome)
             b.punteggio += r.peso
@@ -86,5 +85,14 @@ class Valutatore:
                 b.laurea = l
                 break
         if self.richieste and not (trovate & self.richieste):
-            return False
-        return b.punteggio >= self.soglia
+            b.esclusione = "materia"
+        elif not self.sede_ammessa(b):
+            b.esclusione = "sede"
+        elif b.punteggio < self.soglia:
+            b.esclusione = "soglia"
+        return not b.esclusione
+
+    def quasi_rilevante(self, b: Bando) -> bool:
+        """Bando in materia scartato solo per la sede o per pochi punti: utile per controllare i filtri."""
+        return ((b.esclusione == "sede" and b.punteggio >= self.soglia)
+                or (b.esclusione == "soglia" and b.punteggio >= self.soglia - self.margine))

@@ -15,6 +15,7 @@ pausa_tra_richieste: 1.0   # secondi tra una richiesta e l'altra, per non distur
 # ---------------------------------------------------------------------------------------------
 profilo:
   soglia: 5
+  margine_quasi_rilevanti: 2   # nel report, sezione "quasi rilevanti": fino a 2 punti sotto la soglia
   soglia_dettaglio: 2   # da questo punteggio in su si scarica il dettaglio inPA (requisiti completi)
 
   # Solo bandi con sede in una di queste zone. La sede viene da inPA; per la Gazzetta si guardano

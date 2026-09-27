@@ -118,3 +118,38 @@ def test_main_codice_errore_se_tutte_le_fonti_falliscono(config, tmp_path, monke
     monkeypatch.setattr(m, "Http", lambda **kw: HttpFinto())
     assert m.main(["--config", str(cfg_path), "--stato", str(tmp_path / "s.json"),
                    "--report", str(tmp_path / "r.md"), "--no-notifiche"]) == 1
+
+
+def test_quasi_rilevanti_segnalati_una_volta(config, tmp_path):
+    cfg = cfg_prova(config)
+    cfg["fonti"] = {"gu": cfg["fonti"]["gu"]}
+    percorso = tmp_path / "s.json"
+    stato = Stato(percorso)
+    ris = m.esegui(cfg, stato, http_tutto(), OGGI)
+    # Frosinone: istruttore -> penalizzato, non quasi; nel fixture non ci sono quasi-rilevanti per sede,
+    # quindi aggiungiamo un bando informatico fuori Roma
+    assert all(b.esclusione in ("sede", "soglia") for b in ris.quasi)
+    stato.salva(OGGI)
+    http = http_tutto()
+    http.get_map["caricaDettaglio"] = leggi("gu_sommario.html").replace(
+        "COMUNE DI FROSINONE", "COMUNE DI MILANO").replace(
+        "un posto di istruttore amministrativo, area degli istruttori", "cinque posti di funzionario informatico")
+    ris = m.esegui(cfg, Stato(percorso), http, OGGI)
+    assert [b.id for b in ris.quasi] == ["gu:26E01240"]
+    md = m.report.markdown([], [], {}, OGGI, quasi=ris.quasi)
+    assert "Quasi rilevanti" in md and "fuori dalle sedi scelte" in md
+    stato2 = Stato(percorso)
+    stato2.dati["quasi"]["gu:26E01240"] = OGGI.isoformat()
+    assert m.esegui(cfg, stato2, http, OGGI).quasi == []
+
+
+def test_fonte_con_molte_meno_voci_del_solito(config, tmp_path):
+    cfg = cfg_prova(config)
+    cfg["fonti"] = {"inpa": cfg["fonti"]["inpa"]}
+    stato = Stato(tmp_path / "s.json")
+    stato.dati["letti"]["inpa"] = 1300
+    ris = m.esegui(cfg, stato, http_tutto(), OGGI)
+    assert "la volta scorsa 1300" in ris.errori["inpa"]
+    assert stato.dati["letti"]["inpa"] == 5
+    ris = m.esegui(cfg, stato, http_tutto(), OGGI)  # 5 -> 5: nessun allarme
+    assert "inpa" not in ris.errori

@@ -90,3 +90,23 @@ def test_solo_roma(val, titolo, ente, sede, atteso):
 def test_universita_e_categorie_protette_escluse(val, titolo, ente):
     b = bando(titolo, "laurea magistrale LM-32", ente)
     assert not val.valuta(b) and b.punteggio == -99
+
+
+def test_motivo_esclusione_e_quasi_rilevanti(val):
+    fuori = bando("Concorso per 5 funzionari informatici", "laurea magistrale", "Comune di Milano",
+                  sede="Lombardia, Milano")
+    assert not val.valuta(fuori) and fuori.esclusione == "sede" and val.quasi_rilevante(fuori)
+    legale = bando("Concorso per 1 funzionario legale", "laurea magistrale in giurisprudenza")
+    assert not val.valuta(legale) and legale.esclusione == "materia" and not val.quasi_rilevante(legale)
+    mobilita = bando("Mobilità per funzionario informatico")
+    val.valuta(mobilita)
+    assert mobilita.esclusione == "mobilità/procedure interne" and not val.quasi_rilevante(mobilita)
+    ok = bando("Concorso per 30 esperti informatici", "laurea magistrale")
+    assert val.valuta(ok) and ok.esclusione == ""
+
+
+def test_quasi_rilevante_per_soglia():
+    v = Valutatore({"soglia": 5, "margine_quasi_rilevanti": 2, "richiesta_una_di": ["ict"],
+                    "regole": [{"nome": "ict", "peso": 3, "pattern": ["ict"]}]})
+    b = bando("Profilo ICT")
+    assert not v.valuta(b) and b.esclusione == "soglia" and v.quasi_rilevante(b)

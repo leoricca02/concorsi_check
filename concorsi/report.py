@@ -57,7 +57,8 @@ def _data(iso: str) -> str:
 
 
 def markdown(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], oggi: date,
-             letti: dict[str, int] | None = None, scartati: list[Bando] | None = None) -> str:
+             letti: dict[str, int] | None = None, scartati: list[Bando] | None = None,
+             quasi: list[Bando] | None = None) -> str:
     righe = [f"# Concorsi — controllo del {oggi.strftime('%d/%m/%Y')}", ""]
     if nuovi:
         righe += [f"## 🆕 Nuovi concorsi rilevanti ({len(nuovi)})", ""]
@@ -78,6 +79,15 @@ def markdown(nuovi: list[Bando], aperti: list[Bando], errori: dict[str, str], og
     if scartati:
         righe += [f"<details><summary>🤖 Scartati dopo la lettura del bando ({len(scartati)})</summary>", ""]
         righe += [f"- [{_md(b.titolo)}]({b.url}) — {b.ai['motivo']}" for b in scartati]
+        righe += ["", "</details>", ""]
+    if quasi:
+        motivo = {"sede": "fuori dalle sedi scelte", "soglia": "punteggio appena sotto la soglia"}
+        righe += [f"<details><summary>🔍 Quasi rilevanti: scartati solo per sede o per pochi punti ({len(quasi)})"
+                  "</summary>", ""]
+        righe += [f"- [{_md(b.titolo)}]({b.url}) — {' · '.join(_dettagli(b))} · _{motivo[b.esclusione]}_"
+                  for b in ordina(quasi)[:30]]
+        if len(quasi) > 30:
+            righe.append(f"- …e altri {len(quasi) - 30}")
         righe += ["", "</details>", ""]
     if errori:
         righe += ["## ⚠️ Fonti con problemi", "",

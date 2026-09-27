@@ -29,6 +29,16 @@ class Risultato:
     errori: dict[str, str] = field(default_factory=dict)
     letti: dict[str, int] = field(default_factory=dict)
     scartati_ai: list[Bando] = field(default_factory=list)
+    quasi: list[Bando] = field(default_factory=list)
+
+
+def controlla_quantita(nome: str, letti: int, stato: Stato, ris: Risultato) -> None:
+    """Se una fonte restituisce molte meno voci del solito, probabilmente il sito è cambiato."""
+    prima = stato.dati["letti"].get(nome)
+    if prima and prima >= 20 and letti < prima * 0.3:
+        ris.errori[nome] = (f"lette solo {letti} voci (la volta scorsa {prima}): "
+                            "il sito potrebbe essere cambiato")
+    stato.dati["letti"][nome] = letti
 
 
 def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
@@ -46,6 +56,7 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
             ris.errori[nome] = str(e) or type(e).__name__
             continue
         ris.letti[nome] = len(bandi)
+        controlla_quantita(nome, len(bandi), stato, ris)
         # Le pagine generiche al primo controllo contengono anche bandi vecchi: di default
         # li memorizziamo senza segnalarli, e da lì in poi segnaliamo solo i link nuovi.
         silenzioso = (fcfg["tipo"] == "pagina" and not stato.fonte_inizializzata(nome)
@@ -63,6 +74,10 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
                 stato.segna_segnalato(b, oggi)
                 if not silenzioso:
                     ris.nuovi.append(b)
+            elif val.quasi_rilevante(b) and b.id not in stato.dati["quasi"]:
+                stato.dati["quasi"][b.id] = oggi.isoformat()
+                if not silenzioso:
+                    ris.quasi.append(b)
         stato.segna_fonte_inizializzata(nome)
     verifica_ai(cfg.get("ai") or {}, http, stato, ris, oggi)
     ris.aperti = stato.ancora_aperti(oggi, esclusi={b.id for b in ris.nuovi})
@@ -121,7 +136,8 @@ def main(argv: list[str] | None = None) -> int:
     oggi = date.today()
     ris = esegui(cfg, stato, Http(pausa=float(cfg.get("pausa_tra_richieste", 1.0))), oggi)
 
-    md = report.markdown(ris.nuovi, ris.aperti, ris.errori, oggi, ris.letti, ris.scartati_ai)
+    md = report.markdown(ris.nuovi, ris.aperti, ris.errori, oggi, ris.letti, ris.scartati_ai,
+                         ris.quasi)
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(md, encoding="utf-8")
     if args.issue_file:

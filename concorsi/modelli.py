@@ -24,6 +24,7 @@ class Bando:
     motivi: list[str] = field(default_factory=list)
     laurea: str = ""             # "magistrale" | "triennale" | "qualsiasi" | ""
     ai: dict | None = None       # esito della verifica AI (vedi ai.py), se fatta
+    esclusione: str = ""         # perché non è rilevante: "sede", "soglia", "materia" o nome della regola
 
     def per_stato(self) -> dict:
         d = asdict(self)

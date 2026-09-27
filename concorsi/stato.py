@@ -11,7 +11,8 @@ from .modelli import Bando
 class Stato:
     def __init__(self, percorso: str | Path):
         self.percorso = Path(percorso)
-        self.dati = {"ultimo_run": None, "fonti_inizializzate": [], "visti": {}, "segnalati": {}}
+        self.dati = {"ultimo_run": None, "fonti_inizializzate": [], "visti": {}, "segnalati": {},
+                     "quasi": {}, "letti": {}}
         if self.percorso.exists():
             self.dati.update(json.loads(self.percorso.read_text(encoding="utf-8")))
 
@@ -50,6 +51,7 @@ class Stato:
         """Dimentica le cose vecchie per non far crescere il file all'infinito."""
         limite = (oggi - timedelta(days=giorni)).isoformat()
         self.dati["visti"] = {k: v for k, v in self.dati["visti"].items() if v >= limite}
+        self.dati["quasi"] = {k: v for k, v in self.dati["quasi"].items() if v >= limite}
         self.dati["segnalati"] = {
             k: v for k, v in self.dati["segnalati"].items()
             if (v.get("scadenza") or v.get("segnalato_il", "")) >= limite
