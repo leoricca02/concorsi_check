@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concorsi</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d2330; --muted: #6a7282; --line: #e3e6eb;
+    --accent: #2f5bd3; --ok: #1f8a4c; --warn: #b7791f; --bad: #c53030; --chip: #eef1f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12151b; --card: #1b2029; --text: #e7eaf0; --muted: #98a1b2; --line: #2b313d;
+      --accent: #7ea0ff; --ok: #4fc585; --warn: #e2b04a; --bad: #f07575; --chip: #252b36;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line);
+           padding: 12px 16px; }
+  .riga { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  h1 { font-size: 18px; margin: 0; flex: 1; }
+  .sotto { color: var(--muted); font-size: 13px; }
+  main { max-width: 820px; margin: 0 auto; padding: 12px 16px 48px; }
+  button, input { font: inherit; }
+  .tab { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 999px;
+         padding: 4px 12px; cursor: pointer; }
+  .tab[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+          margin: 12px 0; }
+  .card.dislike { opacity: .55; }
+  .titolo { font-weight: 600; color: var(--text); text-decoration: none; }
+  .titolo:hover { text-decoration: underline; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .chip { background: var(--chip); border-radius: 6px; padding: 2px 8px; font-size: 13px; }
+  .chip.urgente { background: var(--bad); color: #fff; }
+  .chip.nuovo { background: var(--accent); color: #fff; }
+  .ai { font-size: 14px; margin: 6px 0; }
+  .ai b.si { color: var(--ok); } .ai b.forse { color: var(--warn); } .ai b.no { color: var(--bad); }
+  details { font-size: 13px; color: var(--muted); }
+  .voti { display: flex; gap: 8px; margin-top: 10px; }
+  .voto { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 8px;
+          padding: 6px 12px; cursor: pointer; }
+  .voto[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .voto:disabled { opacity: .5; cursor: default; }
+  #impostazioni { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+                  margin-top: 12px; }
+  #impostazioni input { width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 8px;
+                        background: var(--bg); color: var(--text); margin: 8px 0; }
+  #avviso { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); background: var(--text);
+            color: var(--bg); padding: 8px 14px; border-radius: 8px; display: none; max-width: 90vw; }
+  .vuoto { text-align: center; color: var(--muted); padding: 40px 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="riga">
+    <h1>Concorsi</h1>
+    <button class="tab" id="apri-impostazioni" aria-expanded="false">⚙︎</button>
+  </div>
+  <div class="sotto" id="info">Caricamento…</div>
+  <div class="riga" style="margin-top:8px" id="filtri"></div>
+</header>
+<main>
+  <section id="impostazioni" hidden>
+    <b>Salvataggio dei voti</b>
+    <p class="sotto">Per salvare 👍/👎 serve un token GitHub che può modificare solo questo repository
+      (permesso <i>Contents: Read and write</i>). Resta solo in questo browser.</p>
+    <input id="token" type="password" placeholder="github_pat_…" autocomplete="off">
+    <div class="riga">
+      <button class="tab" id="salva-token">Salva</button>
+      <button class="tab" id="togli-token">Rimuovi</button>
+    </div>
+  </section>
+  <div id="lista"></div>
+</main>
+<div id="avviso" role="status"></div>
+<script>
+const REPO = "leoricca02/concorsi_check";
+const FILE = "data/preferenze.json";
+const API = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
+const FILTRI = [["da_valutare", "Da valutare"], ["like", "👍"], ["candidato", "✉️ Candidato"],
+                ["tutti", "Tutti"], ["dislike", "👎"]];
+const AI = { si: "✅ adatto", forse: "❔ da verificare", no: "❌ non adatto" };
+const LAUREA = { magistrale: "🎓 Magistrale", triennale: "🎓 Triennale", qualsiasi: "🎓 Qualsiasi laurea" };
+
+let bandi = [], preferenze = { voti: {} }, sha = null;
+let filtro = leggi("filtro") || "da_valutare";
+
+function leggi(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function scrivi(k, v) { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} }
+function avviso(t) {
+  const el = document.getElementById("avviso");
+  el.textContent = t; el.style.display = "block";
+  clearTimeout(avviso.t); avviso.t = setTimeout(() => el.style.display = "none", 3000);
+}
+function el(tag, props = {}, ...figli) {
+  const e = document.createElement(tag);
+  Object.assign(e, props);
+  for (const f of figli) if (f) e.append(f);
+  return e;
+}
+function giorni(iso) {
+  if (!iso) return null;
+  const oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+  return Math.round((new Date(iso + "T00:00:00") - oggi) / 86400000);
+}
+function dataIt(iso) { return iso ? iso.split("-").reverse().join("/") : ""; }
+
+const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, "")), c => c.charCodeAt(0)));
+function b64enc(str) {
+  const bytes = new TextEncoder().encode(str); let bin = "";
+  for (let i = 0; i < bytes.length; i += 8192) bin += String.fromCharCode(...bytes.subarray(i, i + 8192));
+  return btoa(bin);
+}
+function intestazioni() {
+  const h = { Accept: "application/vnd.github+json" };
+  const t = leggi("token");
+  if (t) h.Authorization = `Bearer ${t}`;
+  return h;
+}
+
+async function caricaPreferenze() {
+  const r = await fetch(API, { headers: intestazioni(), cache: "no-store" });
+  if (r.status === 404) { preferenze = { voti: {} }; sha = null; return; }
+  if (!r.ok) throw new Error(`GitHub ${r.status}`);
+  const j = await r.json();
+  sha = j.sha; preferenze = JSON.parse(b64dec(j.content));
+  preferenze.voti ||= {};
+}
+
+async function salvaPreferenze(messaggio, tentativo = 0) {
+  const body = { message: messaggio, content: b64enc(JSON.stringify(preferenze, null, 1) + "\n") };
+  if (sha) body.sha = sha;
+  const r = await fetch(API, { method: "PUT", headers: intestazioni(), body: JSON.stringify(body) });
+  if ((r.status === 409 || r.status === 422) && tentativo < 2) {
+    // qualcuno (il controllo automatico o un'altra scheda) ha salvato nel frattempo: si riapplica il voto
+    const mio = structuredClone(preferenze.voti);
+    await caricaPreferenze();
+    Object.assign(preferenze.voti, mio);
+    for (const id of Object.keys(preferenze.voti)) if (!(id in mio)) delete preferenze.voti[id];
+    return salvaPreferenze(messaggio, tentativo + 1);
+  }
+  if (!r.ok) throw new Error(r.status === 401 || r.status === 403 ? "token non valido o senza permessi" : `GitHub ${r.status}`);
+  sha = (await r.json()).content.sha;
+}
+
+async function vota(b, voto) {
+  if (!leggi("token")) { mostraImpostazioni(true); avviso("Prima inserisci il token GitHub"); return; }
+  const prima = preferenze.voti[b.id];
+  if (prima && prima.voto === voto) delete preferenze.voti[b.id];
+  else preferenze.voti[b.id] = { voto, titolo: b.titolo, ente: b.ente, profilo: b.profilo || "",
+                                 data: new Date().toISOString().slice(0, 10) };
+  disegna();
+  try {
+    await salvaPreferenze(`Voto: ${voto} — ${b.titolo.slice(0, 60)}`);
+    avviso("Salvato");
+  } catch (e) {
+    if (prima) preferenze.voti[b.id] = prima; else delete preferenze.voti[b.id];
+    disegna(); avviso(`Non salvato: ${e.message}`);
+  }
+}
+
+function scheda(b) {
+  const v = preferenze.voti[b.id]?.voto;
+  const g = giorni(b.scadenza);
+  const chips = el("div", { className: "chips" });
+  if (b.nuovo) chips.append(el("span", { className: "chip nuovo", textContent: "nuovo" }));
+  if (g !== null) chips.append(el("span", {
+    className: "chip" + (g <= 7 ? " urgente" : ""),
+    textContent: `⏰ ${g === 0 ? "scade oggi" : g === 1 ? "scade domani" : `tra ${g} giorni`} (${dataIt(b.scadenza)})` }));
+  for (const t of [b.ente, b.sede && `📍 ${b.sede}`, b.posti && `${b.posti} posti`, LAUREA[b.laurea]])
+    if (t) chips.append(el("span", { className: "chip", textContent: t }));
+
+  const card = el("article", { className: "card" + (v === "dislike" ? " dislike" : "") },
+    el("a", { className: "titolo", href: b.url, target: "_blank", rel: "noopener", textContent: b.titolo }),
+    chips);
+  if (b.ai) {
+    const ai = el("div", { className: "ai" }, el("b", { className: b.ai.esito, textContent: AI[b.ai.esito] }),
+                  document.createTextNode(` ${b.ai.motivo}`));
+    card.append(ai);
+    const extra = [["Laurea", b.ai.laurea_richiesta], ["Classi", b.ai.classi_ammesse], ["Requisiti", b.ai.requisiti]]
+      .filter(([, x]) => x).map(([k, x]) => `${k}: ${x}`).join(" · ");
+    if (extra) card.append(el("div", { className: "sotto", textContent: extra }));
+  }
+  card.append(el("details", {}, el("summary", { textContent: `Punteggio ${b.punteggio} · fonte ${b.fonte}` }),
+                 el("div", { textContent: (b.motivi || []).join(", ") })));
+  const voti = el("div", { className: "voti" });
+  for (const [k, t] of [["like", "👍"], ["dislike", "👎"], ["candidato", "✉️ Mi sono candidato"]]) {
+    const btn = el("button", { className: "voto", textContent: t, title: k });
+    btn.setAttribute("aria-pressed", String(v === k));
+    btn.onclick = () => vota(b, k);
+    voti.append(btn);
+  }
+  card.append(voti);
+  return card;
+}
+
+function disegna() {
+  const filtri = document.getElementById("filtri");
+  filtri.replaceChildren(...FILTRI.map(([k, t]) => {
+    const n = bandi.filter(b => passa(b, k)).length;
+    const btn = el("button", { className: "tab", textContent: `${t} ${n}` });
+    btn.setAttribute("aria-pressed", String(k === filtro));
+    btn.onclick = () => { filtro = k; scrivi("filtro", k); disegna(); };
+    return btn;
+  }));
+  const visibili = bandi.filter(b => passa(b, filtro));
+  document.getElementById("lista").replaceChildren(
+    ...(visibili.length ? visibili.map(scheda) : [el("p", { className: "vuoto", textContent: "Nessun bando qui." })]));
+}
+
+function passa(b, k) {
+  const v = preferenze.voti[b.id]?.voto;
+  if (k === "tutti") return v !== "dislike";
+  if (k === "da_valutare") return !v;
+  return v === k;
+}
+
+function mostraImpostazioni(apri) {
+  const s = document.getElementById("impostazioni");
+  s.hidden = !apri;
+  document.getElementById("apri-impostazioni").setAttribute("aria-expanded", String(apri));
+}
+
+document.getElementById("apri-impostazioni").onclick = () =>
+  mostraImpostazioni(document.getElementById("impostazioni").hidden);
+document.getElementById("salva-token").onclick = async () => {
+  const t = document.getElementById("token").value.trim();
+  if (!t) return;
+  scrivi("token", t); document.getElementById("token").value = "";
+  try { await caricaPreferenze(); disegna(); mostraImpostazioni(false); avviso("Token salvato"); }
+  catch (e) { avviso(`Token non valido: ${e.message}`); }
+};
+document.getElementById("togli-token").onclick = () => { scrivi("token", null); avviso("Token rimosso"); };
+
+(async () => {
+  try {
+    const dati = await (await fetch("bandi.json", { cache: "no-store" })).json();
+    bandi = dati.bandi;
+    const modello = dati.modello_attivo ? "punteggio personale attivo"
+                                        : `punteggio personale dopo 5 voti (ora ${dati.voti_totali})`;
+    document.getElementById("info").textContent =
+      `${bandi.length} bandi aperti · aggiornato il ${dataIt(dati.aggiornato)} · ${modello}`;
+  } catch { document.getElementById("info").textContent = "Dati non ancora disponibili: attendi il prossimo controllo."; }
+  try { await caricaPreferenze(); } catch (e) { avviso(`Voti non caricati: ${e.message}`); }
+  if (!leggi("token")) mostraImpostazioni(true);
+  disegna();
+})();
+</script>
+</body>
+</html>

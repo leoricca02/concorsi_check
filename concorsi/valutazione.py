@@ -43,7 +43,8 @@ class Regola:
 
 
 class Valutatore:
-    def __init__(self, profilo: dict):
+    def __init__(self, profilo: dict, affinita=None):
+        self.affinita = affinita   # funzione Bando -> int: bonus imparato dai tuoi 👍/👎 (vedi preferenze.py)
         self.regole = [Regola.da_config(r) for r in profilo["regole"]]
         self.soglia = int(profilo.get("soglia", 5))
         self.richieste = set(profilo.get("richiesta_una_di", []))
@@ -80,6 +81,10 @@ class Valutatore:
             b.motivi.append(f"{r.nome} ({r.peso:+d})")
             if r.laurea:
                 lauree.append(r.laurea)
+        if self.affinita and (bonus := self.affinita(b)):
+            b.punteggio += bonus
+            simile = "simile a bandi che ti sono piaciuti" if bonus > 0 else "simile a bandi che hai scartato"
+            b.motivi.append(f"{simile} ({bonus:+d})")
         # se il bando cita sia magistrale sia triennale, basta la triennale
         for l in ("triennale", "qualsiasi", "magistrale"):
             if l in lauree:

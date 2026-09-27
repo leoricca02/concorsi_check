@@ -93,6 +93,22 @@ sezione chiusa del report, così puoi controllarli). Nel report compaiono laurea
 
 Senza chiave la verifica viene saltata. Il profilo del candidato è in `config.yaml` → `ai.candidato`.
 
+## Pagina web e 👍/👎
+
+`docs/index.html` (pubblicata con GitHub Pages) mostra i bandi aperti con scadenza, esito AI e i
+pulsanti 👍 / 👎 / ✉️ "mi sono candidato". I voti finiscono in `data/preferenze.json`:
+- 👎 nasconde il bando per sempre (report, scadenze, pagina);
+- dopo 5 voti (almeno uno 👍 e uno 👎) si attiva il **punteggio personale**: un classificatore
+  Naive Bayes sulle parole di titolo, ente e profilo aggiunge da −4 a +4 punti ai bandi simili a
+  quelli votati ("simile a bandi che ti sono piaciuti");
+- gli ultimi bandi votati vengono dati all'AI come esempi dei tuoi gusti.
+
+Attivazione: *Settings → Pages → Deploy from a branch →* branch principale, cartella `/docs`.
+Per votare serve un token GitHub *fine-grained* limitato a questo repository con permesso
+*Contents: Read and write*, da incollare una volta nella pagina (⚙︎): resta solo nel tuo browser.
+
+Il profilo del candidato per l'AI sta nel secret `PROFILO_CANDIDATO` (il repository è pubblico).
+
 ## Aggiungere o togliere siti
 
 In `config.yaml`, sezione `fonti`. Per un nuovo ente basta l'URL della sua pagina "Concorsi" /

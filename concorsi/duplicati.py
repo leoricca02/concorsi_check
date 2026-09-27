@@ -19,7 +19,7 @@ VUOTE = {
 }
 
 
-def _parole(s: str) -> set[str]:
+def parole(s: str) -> set[str]:
     s = unicodedata.normalize("NFKD", s.lower()).encode("ascii", "ignore").decode()
     return {w for w in re.findall(r"[a-z0-9]+", s) if len(w) >= 4 and w not in VUOTE}
 
@@ -29,7 +29,7 @@ def _simili(a: set[str], b: set[str]) -> float:
 
 
 def stesso_ente(a: str, b: str) -> bool:
-    pa, pb = _parole(a), _parole(b)
+    pa, pb = parole(a), parole(b)
     return bool(pa and pb) and (pa <= pb or pb <= pa or _simili(pa, pb) >= 0.6)
 
 
@@ -38,7 +38,7 @@ def stesso_bando(a: Bando, b: Bando, soglia: float = 0.4) -> bool:
         return False
     if a.posti and b.posti and a.posti != b.posti:
         return False
-    return _simili(_parole(f"{a.titolo} {a.profilo}"), _parole(f"{b.titolo} {b.profilo}")) >= soglia
+    return _simili(parole(f"{a.titolo} {a.profilo}"), parole(f"{b.titolo} {b.profilo}")) >= soglia
 
 
 def trova_su_inpa(b: Bando, inpa: list[Bando]) -> Bando | None:

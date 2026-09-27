@@ -99,13 +99,16 @@ def test_main_scrive_report_stato_e_output(config, tmp_path, monkeypatch):
     for k in ("EMAIL_USER", "EMAIL_PASSWORD", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"):
         monkeypatch.delenv(k, raising=False)
     codice = m.main(["--config", str(cfg_path), "--stato", str(tmp_path / "stato.json"),
-                     "--report", str(tmp_path / "r.md"), "--issue-file", str(tmp_path / "issue.md")])
+                     "--report", str(tmp_path / "r.md"), "--pagina", str(tmp_path / "bandi.json"),
+                     "--preferenze", str(tmp_path / "pref.json"), "--issue-file", str(tmp_path / "issue.md")])
     assert codice == 0
     md = (tmp_path / "r.md").read_text(encoding="utf-8")
     assert "Nuovi concorsi rilevanti" in md and "Fonti con problemi" in md and "rotta" in md
     assert (tmp_path / "issue.md").read_text(encoding="utf-8") == md
     stato = json.loads((tmp_path / "stato.json").read_text(encoding="utf-8"))
     assert stato["ultimo_run"] and "inpa:aaa111" in stato["segnalati"]
+    pagina = json.loads((tmp_path / "bandi.json").read_text(encoding="utf-8"))
+    assert pagina["bandi"] and {"id", "titolo", "ai", "nuovo"} <= set(pagina["bandi"][0])
     out = (tmp_path / "out.txt").read_text()
     assert "nuovi=" in out and "errori=1" in out
 
@@ -117,7 +120,8 @@ def test_main_codice_errore_se_tutte_le_fonti_falliscono(config, tmp_path, monke
     cfg_path.write_text(yaml.safe_dump(config, allow_unicode=True), encoding="utf-8")
     monkeypatch.setattr(m, "Http", lambda **kw: HttpFinto())
     assert m.main(["--config", str(cfg_path), "--stato", str(tmp_path / "s.json"),
-                   "--report", str(tmp_path / "r.md"), "--no-notifiche"]) == 1
+                   "--report", str(tmp_path / "r.md"), "--no-notifiche",
+                   "--pagina", str(tmp_path / "bandi.json")]) == 1
 
 
 def test_quasi_rilevanti_segnalati_una_volta(config, tmp_path):

@@ -11,12 +11,13 @@ from pathlib import Path
 import requests
 import yaml
 
-from . import notifiche, report
+from . import dashboard, notifiche, report
 from .ai import ErroreAI, Verificatore
 from .duplicati import trova_su_inpa
 from .fonti import TIPI
 from .http import FonteError, Http
 from .modelli import Bando
+from .preferenze import Preferenze
 from .stato import Stato
 from .valutazione import Valutatore
 
@@ -43,8 +44,10 @@ def controlla_quantita(nome: str, letti: int, stato: Stato, ris: Risultato) -> N
     stato.dati["letti"][nome] = letti
 
 
-def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
-    val = Valutatore(cfg["profilo"])
+def esegui(cfg: dict, stato: Stato, http: Http, oggi: date, pref: Preferenze | None = None) -> Risultato:
+    pref = pref or Preferenze()
+    val = Valutatore(cfg["profilo"], affinita=pref.affinita if pref.attivo else None)
+    nascosti = pref.nascosti
     soglia_dettaglio = int(cfg["profilo"].get("soglia_dettaglio", 2))
     ris = Risultato()
     inpa: list[Bando] = []   # bandi inPA letti in questo run, per riconoscere i doppioni (inPA va letta per prima)
@@ -67,11 +70,12 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
         silenzioso = (fcfg["tipo"] == "pagina" and not stato.fonte_inizializzata(nome)
                       and not fcfg.get("segnala_al_primo_run", False))
         for b in bandi:
-            if b.id in stato.dati["segnalati"] or (b.scadenza and b.scadenza < oggi.isoformat()):
+            if (b.id in stato.dati["segnalati"] or b.id in nascosti
+                    or (b.scadenza and b.scadenza < oggi.isoformat())):
                 continue
             gemello = trova_su_inpa(b, inpa)
             if gemello:
-                if gemello.id in stato.dati["segnalati"]:
+                if gemello.id in stato.dati["segnalati"] or gemello.id in nascosti:
                     continue          # già segnalato (ora o in passato) nella versione inPA
                 # stesso bando su inPA ma non segnalato lì: prendiamo i dati migliori da inPA
                 b.documento = gemello.documento or b.documento
@@ -92,8 +96,8 @@ def esegui(cfg: dict, stato: Stato, http: Http, oggi: date) -> Risultato:
                 if not silenzioso:
                     ris.quasi.append(b)
         stato.segna_fonte_inizializzata(nome)
-    ris.aperti = stato.ancora_aperti(oggi, esclusi={b.id for b in ris.nuovi})
-    verifica_ai(cfg.get("ai") or {}, http, stato, ris, oggi)
+    ris.aperti = stato.ancora_aperti(oggi, esclusi={b.id for b in ris.nuovi} | nascosti)
+    verifica_ai(cfg.get("ai") or {}, http, stato, ris, oggi, pref.esempi())
     ris.in_scadenza = in_scadenza(ris.nuovi + ris.aperti, oggi,
                                   int((cfg.get("notifiche") or {}).get("giorni_scadenza", 7)))
     stato.pulisci(oggi)
@@ -107,9 +111,9 @@ def in_scadenza(bandi: list[Bando], oggi: date, giorni: int) -> list[Bando]:
                   key=lambda b: b.scadenza)
 
 
-def verifica_ai(cfg: dict, http: Http, stato: Stato, ris: Risultato, oggi: date) -> None:
+def verifica_ai(cfg: dict, http: Http, stato: Stato, ris: Risultato, oggi: date, esempi: str = "") -> None:
     """Fa leggere il bando completo a un modello AI e toglie quelli a cui il candidato non può partecipare."""
-    ver = Verificatore(cfg, http) if cfg else None
+    ver = Verificatore(cfg, http, esempi) if cfg else None
     if not (ver and ver.attivo):
         return
     # prima i nuovi, poi quelli segnalati in passato rimasti senza verifica (errore o limite raggiunto)
@@ -150,6 +154,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--config", default="config.yaml")
     ap.add_argument("--stato", default="data/stato.json")
     ap.add_argument("--report", default="reports/ultimo.md", help="dove scrivere il report Markdown")
+    ap.add_argument("--preferenze", default="data/preferenze.json", help="i tuoi 👍/👎, scritti dalla pagina web")
+    ap.add_argument("--pagina", default="docs/bandi.json", help="dati per la pagina web (GitHub Pages)")
     ap.add_argument("--issue-file", help="scrive qui un report accorciato per il corpo di una issue GitHub")
     ap.add_argument("--no-notifiche", action="store_true", help="non inviare email/Telegram")
     ap.add_argument("--prova", action="store_true", help="non salvare lo stato (i nuovi restano nuovi)")
@@ -160,7 +166,9 @@ def main(argv: list[str] | None = None) -> int:
     cfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
     stato = Stato(args.stato)
     oggi = date.today()
-    ris = esegui(cfg, stato, Http(pausa=float(cfg.get("pausa_tra_richieste", 1.0))), oggi)
+    pref = Preferenze(args.preferenze)
+    ris = esegui(cfg, stato, Http(pausa=float(cfg.get("pausa_tra_richieste", 1.0))), oggi, pref)
+    dashboard.scrivi(args.pagina, ris, oggi, pref)
 
     md = report.markdown(ris.nuovi, ris.aperti, ris.errori, oggi, ris.letti, ris.scartati_ai,
                          ris.quasi, ris.in_scadenza)

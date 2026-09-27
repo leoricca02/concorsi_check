@@ -39,7 +39,7 @@ PROMPT = """Valuti bandi di concorso pubblico italiani per conto di un candidato
 
 CANDIDATO:
 {candidato}
-
+{esempi}
 BANDO:
 Titolo: {titolo}
 Ente: {ente}
@@ -84,8 +84,9 @@ def testo_documento(http: Http, url: str, max_caratteri: int) -> str:
 
 
 class Verificatore:
-    def __init__(self, cfg: dict, http: Http):
+    def __init__(self, cfg: dict, http: Http, esempi: str = ""):
         self.cfg = cfg
+        self.esempi = esempi
         self.http = http
         self.provider = cfg.get("provider", "gemini")
         self.modello = cfg.get("modello") or {"gemini": "gemini-flash-lite-latest",
@@ -100,7 +101,9 @@ class Verificatore:
 
     def prompt(self, b: Bando, testo: str) -> str:
         return PROMPT.format(
-            candidato=self.cfg.get("candidato", "").strip(), titolo=b.titolo, ente=b.ente or "-",
+            candidato=(os.environ.get("PROFILO_CANDIDATO") or self.cfg.get("candidato", "")).strip(),
+            esempi=f"\nESEMPI DEI SUOI GUSTI (usali solo per decidere tra 'si' e 'forse'):\n{self.esempi}\n"
+                   if self.esempi else "", titolo=b.titolo, ente=b.ente or "-",
             scadenza=b.scadenza or "-", testo=testo[:self.max_caratteri] or "(non disponibile: usa il titolo)",
             troncato=" (troncato)" if len(testo) > self.max_caratteri else "",
         )

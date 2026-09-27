@@ -237,14 +237,10 @@ ai:
   max_bandi_per_run: 40      # il primo controllo può trovarne tanti; gli altri restano non verificati
   max_caratteri: 60000       # quanta parte del bando leggere (i requisiti sono nei primi articoli)
   pausa: 5                   # secondi tra una chiamata e l'altra (il piano gratuito ha limiti al minuto)
+  # Il profilo del candidato NON sta qui (il repository è pubblico): è nel secret PROFILO_CANDIDATO.
+  # Questo testo si usa solo se il secret manca.
   candidato: |
-    Nato nel 2002, vive a Roma. Non è dipendente pubblico e non appartiene a categorie protette.
-    Laurea magistrale in Engineering in Computer Science, Sapienza Università di Roma
-    (classe LM-32 Ingegneria informatica), conseguimento previsto a ottobre 2026.
-    Laurea triennale in Ingegneria Informatica, Università Roma Tre (classe L-8), 2024.
-    Esperienza: tirocinio di 5 mesi come full stack developer (React, C#); tesi magistrale su pipeline LLM.
-    Competenze: Python, Java, C, C#, JavaScript/TypeScript, Kotlin, SQL/PostgreSQL, Docker, machine learning.
-    Inglese C1 (FCE B2 certificato).
+    Laureato magistrale in ingegneria informatica (classe LM-32), laurea triennale classe L-8.
 
 # ---------------------------------------------------------------------------------------------
 # NOTIFICHE: email e Telegram si attivano impostando i "secrets" su GitHub (vedi README).
