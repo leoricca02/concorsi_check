@@ -1,6 +1,29 @@
 {
- "aggiornato": "2026-09-29",
- "bandi": [],
+ "aggiornato": "2026-10-02",
+ "bandi": [
+  {
+   "id": "inpa:a5ae46f5ea174acca40ccb3a50c8e6d0",
+   "titolo": "Concorso pubblico, per titoli ed esami, per il reclutamento di n. 170 marescialli allievi per il potenziamento del settore informatico e dell’innovazione tecnologica, tecnico logistico, aeronautico, navale e sanitario del Corpo della guardia di finanza per l’anno 2026.",
+   "url": "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id=a5ae46f5ea174acca40ccb3a50c8e6d0",
+   "ente": "Guardia di Finanza - Centro di Reclutamento Roma",
+   "sede": "Nazionale",
+   "scadenza": "2026-11-10",
+   "pubblicazione": "2026-10-01",
+   "posti": 170,
+   "laurea": "magistrale",
+   "punteggio": 12,
+   "motivi": [
+    "profilo informatico/ICT (+6)",
+    "digitale/tecnico (+2)",
+    "laurea magistrale (+3)",
+    "Roma/Lazio o nazionale (+1)"
+   ],
+   "ai": null,
+   "fonte": "inpa",
+   "profilo": "Ispettori",
+   "nuovo": true
+  }
+ ],
  "modello_attivo": false,
  "voti_totali": 2
 }
