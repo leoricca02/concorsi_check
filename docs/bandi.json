@@ -1,6 +1,47 @@
 {
- "aggiornato": "2026-10-02",
+ "aggiornato": "2026-10-06",
  "bandi": [
+  {
+   "id": "gu:26E05302",
+   "titolo": "Conferimento, per titoli e colloquio, di una borsa di ricerca",
+   "url": "https://www.gazzettaufficiale.it/atto/concorsi/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-10-02&atto.codiceRedazionale=26E05302",
+   "ente": "Consiglio Nazionale delle Ricerche - Istituto di Elettronica e di Ingegneria Dell'informazione e delle Telecomunicazioni di Torino",
+   "sede": "Nazionale",
+   "scadenza": "2026-10-17",
+   "pubblicazione": "2026-10-02",
+   "posti": null,
+   "laurea": "",
+   "punteggio": 8,
+   "motivi": [
+    "laurea in informatica richiesta (+5)",
+    "digitale/tecnico (+2)",
+    "Roma/Lazio o nazionale (+1)"
+   ],
+   "ai": null,
+   "fonte": "gazzetta_ufficiale",
+   "profilo": "",
+   "nuovo": true
+  },
+  {
+   "id": "gu:26E05309",
+   "titolo": "Conferimento, per titoli e colloquio, di tre borse di ricerca",
+   "url": "https://www.gazzettaufficiale.it/atto/concorsi/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-10-02&atto.codiceRedazionale=26E05309",
+   "ente": "Consiglio Nazionale delle Ricerche - Istituto di Scienza e Tecnologie Dell'informazione «a. Faedo» di Pisa",
+   "sede": "Nazionale",
+   "scadenza": "2026-10-17",
+   "pubblicazione": "2026-10-02",
+   "posti": null,
+   "laurea": "",
+   "punteggio": 7,
+   "motivi": [
+    "profilo informatico/ICT (+6)",
+    "Roma/Lazio o nazionale (+1)"
+   ],
+   "ai": null,
+   "fonte": "gazzetta_ufficiale",
+   "profilo": "",
+   "nuovo": true
+  },
   {
    "id": "inpa:a5ae46f5ea174acca40ccb3a50c8e6d0",
    "titolo": "Concorso pubblico, per titoli ed esami, per il reclutamento di n. 170 marescialli allievi per il potenziamento del settore informatico e dell’innovazione tecnologica, tecnico logistico, aeronautico, navale e sanitario del Corpo della guardia di finanza per l’anno 2026.",
@@ -21,9 +62,9 @@
    "ai": null,
    "fonte": "inpa",
    "profilo": "Ispettori",
-   "nuovo": true
+   "nuovo": false
   }
  ],
  "modello_attivo": false,
- "voti_totali": 2
+ "voti_totali": 3
 }
