@@ -1,45 +1,27 @@
 {
- "aggiornato": "2026-10-06",
+ "aggiornato": "2026-10-09",
  "bandi": [
   {
-   "id": "gu:26E05302",
-   "titolo": "Conferimento, per titoli e colloquio, di una borsa di ricerca",
-   "url": "https://www.gazzettaufficiale.it/atto/concorsi/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-10-02&atto.codiceRedazionale=26E05302",
-   "ente": "Consiglio Nazionale delle Ricerche - Istituto di Elettronica e di Ingegneria Dell'informazione e delle Telecomunicazioni di Torino",
+   "id": "inpa:f264846750454bd3afdbcca29f8ae5d9",
+   "titolo": "Avviso 0753/2026 per la selezione di n. 2 risorse (oltre 5 anni fino a 10 anni) da impegnare con contratto di collaborazione nell’ambito del Progetto “Convenzione Quadro 2023-2026 per il supporto allo svolgimento delle attività di selezione, formazione, gestione e sviluppo del capitale umano dell'Agenzia delle Entrate - Macro-Ambito 1 - Reclutamento-Gestione procedure concorsuali” Convenzione del 19/05/2023 tra Agenzia Delle Entrate e il Formez PA - RA 23022 Ro 19 CUP D81J23000160001",
+   "url": "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id=f264846750454bd3afdbcca29f8ae5d9",
+   "ente": "Formez PA - Centro Servizi Assistenza Studi e Formazione per L'Ammodernamento Delle P.A. - Direzione Risorse Umane Organizzazione e Performance",
    "sede": "Nazionale",
-   "scadenza": "2026-10-17",
-   "pubblicazione": "2026-10-02",
-   "posti": null,
-   "laurea": "",
-   "punteggio": 8,
+   "scadenza": "2026-10-15",
+   "pubblicazione": "2026-10-08",
+   "posti": 2,
+   "laurea": "triennale",
+   "punteggio": 12,
    "motivi": [
-    "laurea in informatica richiesta (+5)",
+    "dati/AI (+5)",
     "digitale/tecnico (+2)",
-    "Roma/Lazio o nazionale (+1)"
+    "laurea triennale (+2)",
+    "Roma/Lazio o nazionale (+1)",
+    "simile a bandi che ti sono piaciuti (+2)"
    ],
    "ai": null,
-   "fonte": "gazzetta_ufficiale",
-   "profilo": "",
-   "nuovo": true
-  },
-  {
-   "id": "gu:26E05309",
-   "titolo": "Conferimento, per titoli e colloquio, di tre borse di ricerca",
-   "url": "https://www.gazzettaufficiale.it/atto/concorsi/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-10-02&atto.codiceRedazionale=26E05309",
-   "ente": "Consiglio Nazionale delle Ricerche - Istituto di Scienza e Tecnologie Dell'informazione «a. Faedo» di Pisa",
-   "sede": "Nazionale",
-   "scadenza": "2026-10-17",
-   "pubblicazione": "2026-10-02",
-   "posti": null,
-   "laurea": "",
-   "punteggio": 7,
-   "motivi": [
-    "profilo informatico/ICT (+6)",
-    "Roma/Lazio o nazionale (+1)"
-   ],
-   "ai": null,
-   "fonte": "gazzetta_ufficiale",
-   "profilo": "",
+   "fonte": "inpa",
+   "profilo": "Esperto in qualità di data analyst con esperienza minima di 5 anni fino a 10 anni.",
    "nuovo": true
   },
   {
@@ -65,6 +47,6 @@
    "nuovo": false
   }
  ],
- "modello_attivo": false,
- "voti_totali": 3
+ "modello_attivo": true,
+ "voti_totali": 5
 }
