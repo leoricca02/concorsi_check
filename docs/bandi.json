@@ -1,5 +1,5 @@
 {
- "aggiornato": "2026-10-13",
+ "aggiornato": "2026-10-16",
  "bandi": [
   {
    "id": "inpa:a5ae46f5ea174acca40ccb3a50c8e6d0",
@@ -44,7 +44,7 @@
    "ai": null,
    "fonte": "inpa",
    "profilo": "Borsista",
-   "nuovo": true
+   "nuovo": false
   }
  ],
  "modello_attivo": true,
