@@ -1,5 +1,5 @@
 {
- "aggiornato": "2026-10-16",
+ "aggiornato": "2026-10-20",
  "bandi": [
   {
    "id": "inpa:a5ae46f5ea174acca40ccb3a50c8e6d0",
@@ -24,29 +24,27 @@
    "nuovo": false
   },
   {
-   "id": "inpa:f3d010db5f5648cf9ab5cb0393088118",
-   "titolo": "BORSE DI STUDIO “BONALDO STRINGHER”, “GIORGIO MORTARA”, “DONATO MENICHELLA\"",
-   "url": "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id=f3d010db5f5648cf9ab5cb0393088118",
-   "ente": "Dipartimento della Funzione Pubblica",
-   "sede": "Nazionale",
-   "scadenza": "2026-11-20",
-   "pubblicazione": "2026-10-13",
-   "posti": 7,
+   "id": "gu:26E05575",
+   "titolo": "Conferimento, per titoli e colloquio, dell'incarico quinquennale eventualmente rinnovabile di direttore della UOC Sistemi informativi sanitari ed epidemiologia, a tempo determinato.",
+   "url": "https://www.gazzettaufficiale.it/atto/concorsi/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-10-16&atto.codiceRedazionale=26E05575",
+   "ente": "Azienda Sanitaria Locale Roma 3 di Roma",
+   "sede": "",
+   "scadenza": "2026-11-15",
+   "pubblicazione": "2026-10-16",
+   "posti": null,
    "laurea": "",
-   "punteggio": 11,
+   "punteggio": 5,
    "motivi": [
-    "dati/AI (+5)",
-    "cybersecurity (+5)",
-    "digitale/tecnico (+2)",
+    "profilo informatico/ICT (+6)",
     "Roma/Lazio o nazionale (+1)",
-    "tirocinio/borsa (-2)"
+    "simile a bandi che hai scartato (-2)"
    ],
    "ai": null,
-   "fonte": "inpa",
-   "profilo": "Borsista",
-   "nuovo": false
+   "fonte": "gazzetta_ufficiale",
+   "profilo": "",
+   "nuovo": true
   }
  ],
  "modello_attivo": true,
- "voti_totali": 6
+ "voti_totali": 7
 }
