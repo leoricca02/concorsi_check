@@ -1,5 +1,5 @@
 {
- "aggiornato": "2026-10-20",
+ "aggiornato": "2026-10-23",
  "bandi": [
   {
    "id": "inpa:a5ae46f5ea174acca40ccb3a50c8e6d0",
@@ -22,29 +22,8 @@
    "fonte": "inpa",
    "profilo": "Ispettori",
    "nuovo": false
-  },
-  {
-   "id": "gu:26E05575",
-   "titolo": "Conferimento, per titoli e colloquio, dell'incarico quinquennale eventualmente rinnovabile di direttore della UOC Sistemi informativi sanitari ed epidemiologia, a tempo determinato.",
-   "url": "https://www.gazzettaufficiale.it/atto/concorsi/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-10-16&atto.codiceRedazionale=26E05575",
-   "ente": "Azienda Sanitaria Locale Roma 3 di Roma",
-   "sede": "",
-   "scadenza": "2026-11-15",
-   "pubblicazione": "2026-10-16",
-   "posti": null,
-   "laurea": "",
-   "punteggio": 5,
-   "motivi": [
-    "profilo informatico/ICT (+6)",
-    "Roma/Lazio o nazionale (+1)",
-    "simile a bandi che hai scartato (-2)"
-   ],
-   "ai": null,
-   "fonte": "gazzetta_ufficiale",
-   "profilo": "",
-   "nuovo": true
   }
  ],
  "modello_attivo": true,
- "voti_totali": 7
+ "voti_totali": 8
 }
