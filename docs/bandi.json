@@ -1,5 +1,5 @@
 {
- "aggiornato": "2026-10-27",
+ "aggiornato": "2026-10-30",
  "bandi": [
   {
    "id": "inpa:a5ae46f5ea174acca40ccb3a50c8e6d0",
@@ -22,29 +22,8 @@
    "fonte": "inpa",
    "profilo": "Ispettori",
    "nuovo": false
-  },
-  {
-   "id": "pagina:acn_cybersicurezza:92e20730a34ffe48",
-   "titolo": "Avviso pubblico con scadenza 30/10/2026",
-   "url": "https://www.acn.gov.it/portale/documents/d/guest/avviso-di-selezione",
-   "ente": "Agenzia per la Cybersicurezza Nazionale",
-   "sede": "Roma",
-   "scadenza": "",
-   "pubblicazione": "",
-   "posti": null,
-   "laurea": "",
-   "punteggio": 5,
-   "motivi": [
-    "cybersecurity (+5)",
-    "Roma/Lazio o nazionale (+1)",
-    "simile a bandi che hai scartato (-1)"
-   ],
-   "ai": null,
-   "fonte": "acn_cybersicurezza",
-   "profilo": "",
-   "nuovo": true
   }
  ],
  "modello_attivo": true,
- "voti_totali": 8
+ "voti_totali": 9
 }
