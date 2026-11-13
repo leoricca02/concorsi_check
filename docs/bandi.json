@@ -1,27 +1,75 @@
 {
- "aggiornato": "2026-11-10",
+ "aggiornato": "2026-11-13",
  "bandi": [
   {
-   "id": "inpa:a5ae46f5ea174acca40ccb3a50c8e6d0",
-   "titolo": "Concorso pubblico, per titoli ed esami, per il reclutamento di n. 170 marescialli allievi per il potenziamento del settore informatico e dell’innovazione tecnologica, tecnico logistico, aeronautico, navale e sanitario del Corpo della guardia di finanza per l’anno 2026.",
-   "url": "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id=a5ae46f5ea174acca40ccb3a50c8e6d0",
-   "ente": "Guardia di Finanza - Centro di Reclutamento Roma",
-   "sede": "Nazionale",
-   "scadenza": "2026-11-10",
-   "pubblicazione": "2026-10-01",
-   "posti": 170,
-   "laurea": "magistrale",
-   "punteggio": 12,
+   "id": "inpa:a1ef3678d44249d996c9c01515d0e835",
+   "titolo": "N. 2 esperti in cyber security – funzionario tecnico",
+   "url": "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id=a1ef3678d44249d996c9c01515d0e835",
+   "ente": "Agenzia Nazionale per i Servizi Sanitari Regionali - AGENAS",
+   "sede": "Lazio, Roma",
+   "scadenza": "2026-12-10",
+   "pubblicazione": "2026-11-10",
+   "posti": 2,
+   "laurea": "triennale",
+   "punteggio": 11,
    "motivi": [
-    "profilo informatico/ICT (+6)",
+    "cybersecurity (+5)",
     "digitale/tecnico (+2)",
     "laurea magistrale (+3)",
-    "Roma/Lazio o nazionale (+1)"
+    "laurea triennale (+2)",
+    "Roma/Lazio o nazionale (+1)",
+    "simile a bandi che hai scartato (-2)"
    ],
    "ai": null,
    "fonte": "inpa",
-   "profilo": "Ispettori",
-   "nuovo": false
+   "profilo": "Esperto in cyber security – funzionario tecnico",
+   "nuovo": true
+  },
+  {
+   "id": "inpa:24a83e237e92476e93037f8f47b05cc5",
+   "titolo": "N. 1 esperto in cyber security – funzionario giuridico",
+   "url": "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id=24a83e237e92476e93037f8f47b05cc5",
+   "ente": "Agenzia Nazionale per i Servizi Sanitari Regionali - AGENAS",
+   "sede": "Lazio, Roma",
+   "scadenza": "2026-12-10",
+   "pubblicazione": "2026-11-10",
+   "posti": 1,
+   "laurea": "triennale",
+   "punteggio": 7,
+   "motivi": [
+    "cybersecurity (+5)",
+    "digitale/tecnico (+2)",
+    "laurea triennale (+2)",
+    "Roma/Lazio o nazionale (+1)",
+    "simile a bandi che hai scartato (-3)"
+   ],
+   "ai": null,
+   "fonte": "inpa",
+   "profilo": "Esperto in cyber security – funzionario giuridico",
+   "nuovo": true
+  },
+  {
+   "id": "inpa:956f726d3f8548ed87b0df924f62f561",
+   "titolo": "Collaboratore Tecnico Professionale – settore ingegnere informatico",
+   "url": "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id=956f726d3f8548ed87b0df924f62f561",
+   "ente": "Agenzia Nazionale per i Servizi Sanitari Regionali - AGENAS",
+   "sede": "Lazio, Roma",
+   "scadenza": "2026-12-11",
+   "pubblicazione": "2026-11-11",
+   "posti": 2,
+   "laurea": "",
+   "punteggio": 15,
+   "motivi": [
+    "profilo informatico/ICT (+6)",
+    "dati/AI (+5)",
+    "digitale/tecnico (+2)",
+    "Roma/Lazio o nazionale (+1)",
+    "simile a bandi che ti sono piaciuti (+1)"
+   ],
+   "ai": null,
+   "fonte": "inpa",
+   "profilo": "Collaboratore Tecnico Professionale – settore ingegnere informatico",
+   "nuovo": true
   }
  ],
  "modello_attivo": true,
