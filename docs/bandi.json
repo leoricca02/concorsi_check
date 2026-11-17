@@ -1,5 +1,5 @@
 {
- "aggiornato": "2026-11-13",
+ "aggiornato": "2026-11-17",
  "bandi": [
   {
    "id": "inpa:a1ef3678d44249d996c9c01515d0e835",
@@ -23,7 +23,7 @@
    "ai": null,
    "fonte": "inpa",
    "profilo": "Esperto in cyber security – funzionario tecnico",
-   "nuovo": true
+   "nuovo": false
   },
   {
    "id": "inpa:24a83e237e92476e93037f8f47b05cc5",
@@ -46,7 +46,7 @@
    "ai": null,
    "fonte": "inpa",
    "profilo": "Esperto in cyber security – funzionario giuridico",
-   "nuovo": true
+   "nuovo": false
   },
   {
    "id": "inpa:956f726d3f8548ed87b0df924f62f561",
@@ -69,6 +69,27 @@
    "ai": null,
    "fonte": "inpa",
    "profilo": "Collaboratore Tecnico Professionale – settore ingegnere informatico",
+   "nuovo": false
+  },
+  {
+   "id": "inpa:321aeec94ecd40b58088c73ac8acf1d8",
+   "titolo": "Concorso pubblico, per titoli ed esami, per 300 allievi vice ispettori della Polizia di Stato in possesso di specifiche competenze in ambito informatico",
+   "url": "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id=321aeec94ecd40b58088c73ac8acf1d8",
+   "ente": "Ministero dell'Interno - Direzione centrale per gli affari generali e le politiche del personale della Polizia di Stato - Servizio Concorsi",
+   "sede": "Nazionale",
+   "scadenza": "2026-12-17",
+   "pubblicazione": "2026-11-17",
+   "posti": 300,
+   "laurea": "",
+   "punteggio": 8,
+   "motivi": [
+    "profilo informatico/ICT (+6)",
+    "Roma/Lazio o nazionale (+1)",
+    "simile a bandi che ti sono piaciuti (+1)"
+   ],
+   "ai": null,
+   "fonte": "inpa",
+   "profilo": "vice ispettore della polizia di stato con competenze informatiche",
    "nuovo": true
   }
  ],
