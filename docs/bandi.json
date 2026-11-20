@@ -1,5 +1,5 @@
 {
- "aggiornato": "2026-11-17",
+ "aggiornato": "2026-11-20",
  "bandi": [
   {
    "id": "inpa:a1ef3678d44249d996c9c01515d0e835",
@@ -90,7 +90,7 @@
    "ai": null,
    "fonte": "inpa",
    "profilo": "vice ispettore della polizia di stato con competenze informatiche",
-   "nuovo": true
+   "nuovo": false
   }
  ],
  "modello_attivo": true,
