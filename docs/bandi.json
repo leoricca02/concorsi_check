@@ -1,5 +1,5 @@
 {
- "aggiornato": "2026-11-20",
+ "aggiornato": "2026-11-24",
  "bandi": [
   {
    "id": "inpa:a1ef3678d44249d996c9c01515d0e835",
@@ -91,6 +91,27 @@
    "fonte": "inpa",
    "profilo": "vice ispettore della polizia di stato con competenze informatiche",
    "nuovo": false
+  },
+  {
+   "id": "gu:26E06355",
+   "titolo": "Concorso pubblico, per titoli ed esami, per la copertura di un posto di ricercatore sanitario, area della ricerca sanitaria biomedica e bioinformatica, a tempo determinato della durata di cinque anni con possibilita' di un solo rinnovo per la durata massima di ulteriori cinque anni, per la direzione scientifica.",
+   "url": "https://www.gazzettaufficiale.it/atto/concorsi/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-11-20&atto.codiceRedazionale=26E06355",
+   "ente": "Istituto Nazionale Ricovero e Cura per Anziani di Ancona",
+   "sede": "",
+   "scadenza": "2026-12-20",
+   "pubblicazione": "2026-11-20",
+   "posti": 1,
+   "laurea": "",
+   "punteggio": 5,
+   "motivi": [
+    "profilo informatico/ICT (+6)",
+    "Roma/Lazio o nazionale (+1)",
+    "simile a bandi che hai scartato (-2)"
+   ],
+   "ai": null,
+   "fonte": "gazzetta_ufficiale",
+   "profilo": "",
+   "nuovo": true
   }
  ],
  "modello_attivo": true,
