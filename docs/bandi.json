@@ -1,5 +1,5 @@
 {
- "aggiornato": "2026-11-24",
+ "aggiornato": "2026-11-27",
  "bandi": [
   {
    "id": "inpa:a1ef3678d44249d996c9c01515d0e835",
@@ -111,7 +111,7 @@
    "ai": null,
    "fonte": "gazzetta_ufficiale",
    "profilo": "",
-   "nuovo": true
+   "nuovo": false
   }
  ],
  "modello_attivo": true,
